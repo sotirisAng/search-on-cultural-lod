@@ -12,9 +12,11 @@ class ResultTable2 extends React.Component {
                     return(
                      <tr key={index}>
                          {objkeys.map((v,k) =>
-                             // var v_s = v.toString()
+
+                                // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
+                                // var v_s = v.toString()
                              // console.log (obj[v].value)
-                             <td>{obj[v].value}</td>
+                            (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>
                              )}
                          {/*<td>{obj.name.value}</td>*/}
                          {/*<td>{obj.cho.value}</td>*/}
