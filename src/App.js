@@ -3,6 +3,8 @@ import axios from 'axios';
 import logo from './logo.svg';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
+import {BrowserRouter as Router, Route} from 'react-router-dom'
+
 
 import './App.css';
 
@@ -11,7 +13,7 @@ class App extends Component {
         query: '',
         query_start: 'SELECT * WHERE{ ',
         query_end: ' }',
-        prefixes: 'query= PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/>',
+        prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
         // artist: '?cho dc:creator ?artist. ?artist skos:prefLabel ?name. ',
         // artist_filter: {
         //     start: 'FILTER regex(?name, "',
@@ -27,6 +29,7 @@ class App extends Component {
             value: '',
             end: '") '
         },
+        external_services:[],
         http_result: []
     };
 
@@ -73,6 +76,20 @@ class App extends Component {
         // console.log(this.state.filters);
     };
 
+    passService = (input_text) => {
+
+      let  artist_federated = {
+            europeanaStart : '{ SERVICE <http://sparql.europeana.eu> { ?artist1 skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
+            input1 : input_text,
+            eupeana_end: '", "i" )}} union {SERVICE <http://dbpedia.org/sparql/> { ?artist2 rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
+            input2 : input_text,
+          bdend: '","i")}}'
+        } ;
+
+        this.state.external_services.push(artist_federated);
+
+    };
+
     passSubject = (triple) => {
         // this.setState({
         //     subjects: this.state.subjects.push(triple)
@@ -85,6 +102,7 @@ class App extends Component {
     builtQuery = (input_text) => {
         let subjects_string = '';
         let filters_string = '';
+        let services_string = '';
         this.state.subjects.map((subject)=>
             subjects_string += subject
         );
@@ -92,11 +110,15 @@ class App extends Component {
         this.state.filters.map((filter)=>
            filters_string += Object.values(filter).join('')
         );
+        this.state.external_services.map((service)=>
+           services_string += Object.values(service).join('')
+        );
         console.log(filters_string);
         this.setState({
-        query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + this.state.query_end,
+        query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + services_string + this.state.query_end,
             subjects:[],
-            filters: []
+            filters: [],
+            external_services: []
         })
     };
 
@@ -129,96 +151,107 @@ class App extends Component {
 
 
 
+
+
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Search Semantic Integrated Museum Data </h2>
-        </div>
-          {/*<h2>Picasso</h2>*/}
-          <h3>Artist</h3>
-          <InputTest passValue={this.passValue}
-                     passvalueType={'text'}
-                     passSubject={this.passSubject}
-                     triple={"?cho dc:creator ?artist. ?artist skos:prefLabel ?name. "}
-                     subject={'?name'}
-          />
-          <h3>Lived Between (Years)</h3>
-          <InputTest passValue={this.passValue}
-                     custom_filter={{
-                         start: ' FILTER(',
-                         subject: '',
-                         between: '>= "',
-                         value: '',
-                         end: '") '
-                     }}
-                     passvalueType={'text'}
-                     passSubject={this.passSubject}
-                     triple={"?artist edm:begin ?born. "}
-                     subject={'?born'}
-          />
-          <InputTest passValue={this.passValue}
-                     custom_filter={{
-                         start: ' FILTER(',
-                         subject: '',
-                         between: '<= "',
-                         value: '',
-                         end: '") '
-                     }}
-                     passvalueType={'text'}
-                     passSubject={this.passSubject}
-                     triple={"?artist edm:end ?died."}
-                     subject={'?died'}
-          />
-          <h3>Title</h3>
-          <InputTest passValue={this.passValue}
-                     passvalueType={'text'}
-                     passSubject={this.passSubject}
-                     triple={"?cho dct:title ?title. "}
-                     subject={'?title'}
-          />
-          <h3>Medium</h3>
-          <InputTest passValue={this.passValue}
-                     passvalueType={'text'}
-                     passSubject={this.passSubject}
-                     triple={"?cho dct:medium ?medium. "}
-                     subject={'?medium'}
-          />
-          <h3>Date</h3>
-          <InputTest passValue={this.passValue}
-                       custom_filter={{
-                           start: ' FILTER(',
-                           subject: '',
-                           between: '= "',
-                           value: '',
-                           end: '") '
-                       }}
-                       passvalueType={'text'}
-                       passSubject={this.passSubject}
-                       triple={"?cho dc:date ?date."}
-                       subject={'?date'}
-          />
-          <h3>Classification</h3>
-          <InputTest passValue={this.passValue}
-                     passvalueType={'text'}
-                     passSubject={this.passSubject}
-                     triple={"?cho dc:type ?classification. "}
-                     subject={'?classification'}
-          />
-          <h3>Thumbnail</h3>
-          <InputTest
-                     passvalueType={'checkbox'}
-                     passSubject={this.passSubject}
-                     triple={"?cho edm:hasView ?thumbnail. "}
-                     subject={'?thumbnail'}
-          />
-          <button className={'btn btn-success'} onClick={this.builtQuery}>Build Query</button>
-          <button className={'btn btn-danger'} onClick={this.postQuery}>Post Query</button>
-          <h3>{this.state.query} </h3>
-          <ResultTable2 http_result={this.state.http_result}/>
+        <Router>
+            <div className="App">
+                <div className="App-header">
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <h2>Search Semantic Integrated Museum Data </h2>
+                </div>
+                {/*<h2>Picasso</h2>*/}
+                <h3>Artist</h3>
+                <InputTest passValue={this.passValue}
+                           passService={this.passService}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?cho dc:creator ?artist. ?artist skos:prefLabel ?name. "}
+                           subject={'?name'}
+                />
+                <h3>Lived Between (Years)</h3>
+                <InputTest passValue={this.passValue}
+                           custom_filter={{
+                               start: ' FILTER(',
+                               subject: '',
+                               between: '>= "',
+                               value: '',
+                               end: '") '
+                           }}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?artist edm:begin ?born. "}
+                           subject={'?born'}
+                />
+                <InputTest passValue={this.passValue}
+                           custom_filter={{
+                               start: ' FILTER(',
+                               subject: '',
+                               between: '<= "',
+                               value: '',
+                               end: '") '
+                           }}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?artist edm:end ?died."}
+                           subject={'?died'}
+                />
+                <h3>Title</h3>
+                <InputTest passValue={this.passValue}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?cho dct:title ?title. "}
+                           subject={'?title'}
+                />
+                <h3>Medium</h3>
+                <InputTest passValue={this.passValue}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?cho dct:medium ?medium. "}
+                           subject={'?medium'}
+                />
+                <h3>Date</h3>
+                <InputTest passValue={this.passValue}
+                           custom_filter={{
+                               start: ' FILTER(',
+                               subject: '',
+                               between: '= "',
+                               value: '',
+                               end: '") '
+                           }}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?cho dc:date ?date."}
+                           subject={'?date'}
+                />
+                <h3>Classification</h3>
+                <InputTest passValue={this.passValue}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?cho dc:type ?classification. "}
+                           subject={'?classification'}
+                />
+                <h3>Thumbnail</h3>
+                <InputTest
+                    passvalueType={'checkbox'}
+                    passSubject={this.passSubject}
+                    triple={"?cho edm:hasView ?thumbnail. "}
+                    subject={'?thumbnail'}
+                />
+                <button className={'btn btn-success'} onClick={this.builtQuery}>Build Query</button>
+                <button className={'btn btn-danger'} onClick={this.postQuery}>Post Query</button>
+                <h3>{this.state.query} </h3>
 
-      </div>
+                <Route exact path="/" render={props => (
+                <React.Fragment>
+                    <ResultTable2 http_result={this.state.http_result}/>
+                </React.Fragment>
+            )}/>
+                <Route path="/details" component={Details} />
+            </div>
+        </Router>
+
     );
   }
 }
