@@ -18,6 +18,7 @@ export class InputTest extends React.Component{
             this.props.passValue(this.state.input_text, this.props.subject, this.props.custom_filter);
         }
         if (typeof this.props.passService !== "undefined") {
+            if (this.state.input_text !== '')
             this.props.passService(this.state.input_text);
         }
         if (this.state.input_text !== '' || this.state.input_text !== false)

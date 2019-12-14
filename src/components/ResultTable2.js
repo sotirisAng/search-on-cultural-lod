@@ -98,12 +98,26 @@ class ResultTable2 extends React.Component {
 
         return(
             this.props.http_result.reduce((res, obj) => {
+                // console.log("name = "+ obj.name.value )
                 let n ='';
+                // const name ='';
+                const nam = obj.name.value || undefined;
+                // if (obj.name) { }
                 if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
                 if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
-                let jaro = this.distance(obj.name.value , n);
-                if (jaro > 0.85) {
+                if (n === ''){
+                    console.log(n)
                     res.push(obj);
+                }
+                else if (nam !== undefined){
+                    let jaro = this.distance(nam , n);
+                    console.log(jaro)
+                    if (jaro > 0.95) {
+                        console.log('yes')
+                        if (obj.name1) delete obj.name1;
+                        if (obj.name2) delete obj.name2;
+                        res.push(obj);
+                    }
                 }
                 // console.log( 'result = '+ res)
                 return res;
@@ -125,8 +139,8 @@ class ResultTable2 extends React.Component {
                                 // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
                                 // var v_s = v.toString()
                              {
-                                 return (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
-                                 // return (obj[v].type === 'uri') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
+                                 // return (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
+                                 return (obj[v].type === 'uri') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
                              )}
                          {/*<td>{obj.name.value}</td>*/}
                          {/*<td>{obj.cho.value}</td>*/}
@@ -140,6 +154,8 @@ class ResultTable2 extends React.Component {
     displayHeaders = () => {
         if (this.props.http_result[0] !== undefined) {
             const temp = this.props.http_result[0];
+            if (temp.name1) delete temp.name1;
+            if (temp.name2) delete temp.name2;
             const temp2 = Object.keys(temp);
             // console.log(temp);
             // console.log(temp2);

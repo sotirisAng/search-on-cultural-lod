@@ -4,6 +4,8 @@ import logo from './logo.svg';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
 import {BrowserRouter as Router, Route} from 'react-router-dom'
+// import Details from "./components/pages/Details";
+// import {d3} from "node_modules/d3-sparql";
 
 
 import './App.css';
@@ -11,7 +13,7 @@ import './App.css';
 class App extends Component {
     state = {
         query: '',
-        query_start: 'SELECT * WHERE{ ',
+        query_start: 'SELECT distinct * WHERE{ ',
         query_end: ' }',
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
         // artist: '?cho dc:creator ?artist. ?artist skos:prefLabel ?name. ',
@@ -38,6 +40,7 @@ class App extends Component {
         value: '',
         end: '")'
     };
+
 
     // passValue = (input_text) => {
     //     this.setState(prevState => ({
@@ -79,11 +82,12 @@ class App extends Component {
     passService = (input_text) => {
 
       let  artist_federated = {
-            europeanaStart : '{ SERVICE <http://sparql.europeana.eu> { ?artist1 skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
+            europeanaStart : ' optional { SERVICE <http://sparql.europeana.eu> { ?artist1 a edm:Agent .  ?artist1 skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
             input1 : input_text,
-            eupeana_end: '", "i" )}} union {SERVICE <http://dbpedia.org/sparql/> { ?artist2 rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
-            input2 : input_text,
-          bdend: '","i")}}'
+            eupeana_end: '", "i" )}} ',
+          //   dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?artist2 rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
+          // input2 : input_text,
+          // dbpedia_end: '","i")}}'
         } ;
 
         this.state.external_services.push(artist_federated);
@@ -248,7 +252,7 @@ class App extends Component {
                     <ResultTable2 http_result={this.state.http_result}/>
                 </React.Fragment>
             )}/>
-                <Route path="/details" component={Details} />
+                {/*<Route path="/details" component={Details} />*/}
             </div>
         </Router>
 
