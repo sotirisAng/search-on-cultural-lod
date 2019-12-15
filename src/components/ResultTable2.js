@@ -1,5 +1,6 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
+import ResourceDetails from "./pages/ResourceDetails";
 
 
 class ResultTable2 extends React.Component {
@@ -81,6 +82,8 @@ class ResultTable2 extends React.Component {
         return weight;
     };
 
+    http_results = () => {};
+
     displayRows = () => {
         // let result  = this.props.http_result.reduce((res, obj) => {
         //     let n ='';
@@ -95,13 +98,13 @@ class ResultTable2 extends React.Component {
         // }, []).map((obj, index) => {
         //
         // });
-
+        // results = this.http_results()
         return(
             this.props.http_result.reduce((res, obj) => {
                 // console.log("name = "+ obj.name.value )
                 let n ='';
-                // const name ='';
-                const nam = obj.name.value || undefined;
+                let nam = undefined;
+                if (obj.name) { nam = obj.name.value;}
                 // if (obj.name) { }
                 if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
                 if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
@@ -139,9 +142,24 @@ class ResultTable2 extends React.Component {
                                 // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
                                 // var v_s = v.toString()
                              {
+                                 let value;
+                                 // if (obj[v].type === 'uri' && obj[v].value.includes('mple.')) {console.log(obj[v].value)}
                                  // return (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
-                                 return (obj[v].type === 'uri') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
-                             )}
+                                 if (obj[v].type !== 'uri')  {
+                                      value = <td>{obj[v].value}</td> }
+                                 else
+                                 {  if (obj[v].value.includes('mple.')) {
+                                     value = <td><Link to={{
+                                         pathname: '/details',
+                                         state: {resourceClicked: obj[v].value}
+                                     }}> {obj[v].value} </Link></td>
+                                 } else {
+                                     value = <td><a href={obj[v].value}> {obj[v].value} </a></td>
+                                 }}
+                                 return value
+                             }
+
+                         )}
                          {/*<td>{obj.name.value}</td>*/}
                          {/*<td>{obj.cho.value}</td>*/}
                      </tr>

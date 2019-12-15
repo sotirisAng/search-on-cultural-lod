@@ -4,7 +4,7 @@ import logo from './logo.svg';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
 import {BrowserRouter as Router, Route} from 'react-router-dom'
-// import Details from "./components/pages/Details";
+import ResourceDetails from "./components/pages/ResourceDetails";
 // import {d3} from "node_modules/d3-sparql";
 
 
@@ -82,7 +82,7 @@ class App extends Component {
     passService = (input_text) => {
 
       let  artist_federated = {
-            europeanaStart : ' optional { SERVICE <http://sparql.europeana.eu> { ?artist1 a edm:Agent .  ?artist1 skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
+            europeanaStart : ' optional { SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
             input1 : input_text,
             eupeana_end: '", "i" )}} ',
           //   dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?artist2 rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
@@ -120,6 +120,15 @@ class App extends Component {
         console.log(filters_string);
         this.setState({
         query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + services_string + this.state.query_end,
+            subjects:[],
+            filters: [],
+            external_services: []
+        })
+    };
+
+    clearQuery = () =>{
+        this.setState({
+            query: '',
             subjects:[],
             filters: [],
             external_services: []
@@ -245,14 +254,15 @@ class App extends Component {
                 />
                 <button className={'btn btn-success'} onClick={this.builtQuery}>Build Query</button>
                 <button className={'btn btn-danger'} onClick={this.postQuery}>Post Query</button>
+                <button className={'btn btn-warning'} onClick={this.clearQuery}>Clear Query</button>
                 <h3>{this.state.query} </h3>
 
                 <Route exact path="/" render={props => (
-                <React.Fragment>
-                    <ResultTable2 http_result={this.state.http_result}/>
-                </React.Fragment>
-            )}/>
-                {/*<Route path="/details" component={Details} />*/}
+                    <React.Fragment>
+                        <ResultTable2 http_result={this.state.http_result}/>
+                    </React.Fragment>
+                )}/>
+                <Route path="/details" render={(props) => <ResourceDetails {...props}/>} />
             </div>
         </Router>
 

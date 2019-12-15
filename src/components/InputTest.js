@@ -25,6 +25,7 @@ export class InputTest extends React.Component{
         this.props.passSubject(this.props.triple);
         // this.props.builtQuery(this.state.input_text);
         // this.setState({input_text: ''})
+
     };
 
 
