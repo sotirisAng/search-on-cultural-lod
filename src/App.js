@@ -9,6 +9,7 @@ import ResourceDetails from "./components/pages/ResourceDetails";
 
 
 import './App.css';
+import {MakeHttpReq} from "./components/MakeHttpReq";
 
 class App extends Component {
     state = {
@@ -135,30 +136,19 @@ class App extends Component {
         })
     };
 
-    postQuery = (state) => {
+    postQuery = () => {
         // let data: {
         //     query: {state.query},
         //     output: {"json"}
         // };
 
-        let config = {
-            headers: {
-                'Accept': 'application/sparql-results+json,*/*;q=0.9',
-                // 'Accept-Language': 'en-US,el;q=0.7,en;q=0.3',
-                // 'Accept-Encoding': 'gzip, deflate',
-                'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
-            }
-        };
+        MakeHttpReq('sparql', this.state.query).then((res) =>{
+            this.setState({
+                http_result: res.data.results.bindings
+            })
+        }
+        );
 
-        axios.post("http://localhost:3030/test3/sparql", this.state.query , config )
-            .then((res) => {
-                console.log(res.data.results.bindings);
-                this.setState({
-                    http_result: res.data.results.bindings
-                })
-            }).catch((error) => {
-            console.log(error)
-        });
     };
 
 

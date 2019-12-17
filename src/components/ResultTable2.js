@@ -1,6 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import ResourceDetails from "./pages/ResourceDetails";
+import {MakeHttpReq} from "./MakeHttpReq";
 
 
 class ResultTable2 extends React.Component {
@@ -82,6 +83,19 @@ class ResultTable2 extends React.Component {
         return weight;
     };
 
+    createSameAsRelation = (sub,obj) =>{
+        let askQuery = {
+            query: '',
+            query_start: 'ASK WHERE{ ',
+            query_end: ' }',
+            prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#>',
+
+        };
+        askQuery.query= askQuery.prefixes +askQuery.query_start+ '<'+sub + '> owl:sameAs <' + obj +'>' + askQuery.query_end;
+        let res = MakeHttpReq('sparql',askQuery.query)
+
+    }
+
     http_results = () => {};
 
     displayRows = () => {
@@ -106,17 +120,18 @@ class ResultTable2 extends React.Component {
                 let nam = undefined;
                 if (obj.name) { nam = obj.name.value;}
                 // if (obj.name) { }
-                if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
-                if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
+                if (obj.name1) {console.log("name1 = " +obj.name1.value);  n = obj.name1.value;}
+                if (obj.name2) {console.log("name2 = " +obj.name2.value);  n = obj.name2.value;}
                 if (n === ''){
                     console.log(n)
                     res.push(obj);
                 }
                 else if (nam !== undefined){
                     let jaro = this.distance(nam , n);
-                    console.log(jaro)
+                    console.log(jaro);
                     if (jaro > 0.95) {
-                        console.log('yes')
+                        console.log('yes');
+                        //createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
                         if (obj.name1) delete obj.name1;
                         if (obj.name2) delete obj.name2;
                         res.push(obj);
