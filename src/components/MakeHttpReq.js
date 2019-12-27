@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import axios from 'axios';
 
 export function MakeHttpReq(urlEnding,query ) {
@@ -11,7 +11,7 @@ export function MakeHttpReq(urlEnding,query ) {
             'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
         }
     };
-    let url = "http://localhost:3030/test3/"+urlEnding
+    let url = "http://localhost:3030/cmoaMoma/"+urlEnding
    return axios.post(url, query , config )
         .then((res) => {
             console.log(res);

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import logo from './logo.svg';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
@@ -83,12 +83,12 @@ class App extends Component {
     passService = (input_text) => {
 
       let  artist_federated = {
-            europeanaStart : ' optional { SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
+            europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
             input1 : input_text,
             eupeana_end: '", "i" )}} ',
-          //   dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?artist2 rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
-          // input2 : input_text,
-          // dbpedia_end: '","i")}}'
+            dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
+          input2 : input_text,
+          dbpedia_end: '","i")}}}'
         } ;
 
         this.state.external_services.push(artist_federated);

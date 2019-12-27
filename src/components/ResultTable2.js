@@ -1,6 +1,6 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import ResourceDetails from "./pages/ResourceDetails";
+// import ResourceDetails from "./pages/ResourceDetails";
 import {MakeHttpReq} from "./MakeHttpReq";
 
 
@@ -77,24 +77,29 @@ class ResultTable2 extends React.Component {
                 ++l;
             }
 
-            weight = weight + l * p * (1 - weight);
+            weight += l * p * (1 - weight);
         }
 
         return weight;
-    };
+    }; //give credits for jaro distance
 
-    createSameAsRelation = (sub,obj) =>{
+    createSameAsRelation = async (sub, obj) => {
         let askQuery = {
             query: '',
-            query_start: 'ASK WHERE{ ',
+            query_ask: 'ASK WHERE{ ',
+            query_insert: 'INSERT { ',
             query_end: ' }',
             prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#>',
 
         };
-        askQuery.query= askQuery.prefixes +askQuery.query_start+ '<'+sub + '> owl:sameAs <' + obj +'>' + askQuery.query_end;
-        let res = MakeHttpReq('sparql',askQuery.query)
+        askQuery.query = askQuery.prefixes + askQuery.query_ask + '<' + sub + '> owl:sameAs <' + obj + '>' + askQuery.query_end;
+        let res = await MakeHttpReq('sparql', askQuery.query);
+        if (!res.data.boolean) {
+            askQuery.query = askQuery.prefixes + askQuery.query_insert + '<' + sub + '> owl:sameAs <' + obj + '>' + askQuery.query_end;
+            console.log('askQuery.query');
+        }
 
-    }
+    };
 
     http_results = () => {};
 
@@ -113,9 +118,12 @@ class ResultTable2 extends React.Component {
         //
         // });
         // results = this.http_results()
+        let c = 1;
         return(
             this.props.http_result.reduce((res, obj) => {
                 // console.log("name = "+ obj.name.value )
+                c++;
+                console.log(c);
                 let n ='';
                 let nam = undefined;
                 if (obj.name) { nam = obj.name.value;}
@@ -123,7 +131,7 @@ class ResultTable2 extends React.Component {
                 if (obj.name1) {console.log("name1 = " +obj.name1.value);  n = obj.name1.value;}
                 if (obj.name2) {console.log("name2 = " +obj.name2.value);  n = obj.name2.value;}
                 if (n === ''){
-                    console.log(n)
+                    console.log('n='+n);
                     res.push(obj);
                 }
                 else if (nam !== undefined){
@@ -131,7 +139,17 @@ class ResultTable2 extends React.Component {
                     console.log(jaro);
                     if (jaro > 0.95) {
                         console.log('yes');
-                        //createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
+                        console.log(obj.artist.value);
+                        if(obj.ExternalLink){
+                            console.log(obj.ExternalLink.value);
+                            this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
+                        }
+                        else if (obj.SameAslLink){
+                            console.log(obj.SameAslLink.value);
+                            this.createSameAsRelation(obj.artist.value, obj.SameAslLink.value)
+                        }
+                        // console.log(obj.ExternalLink.value);
+                        // this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
                         if (obj.name1) delete obj.name1;
                         if (obj.name2) delete obj.name2;
                         res.push(obj);
@@ -149,7 +167,7 @@ class ResultTable2 extends React.Component {
                 //      if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
                 // let jaro = this.distance(obj.name.value , n)
                 //
-                // console.log('jaro = ' + jaro);
+                console.log('c = ' + c);
                     return(
                      <tr key={index}>
                          {objkeys.map((v,k) =>
@@ -163,7 +181,7 @@ class ResultTable2 extends React.Component {
                                  if (obj[v].type !== 'uri')  {
                                       value = <td>{obj[v].value}</td> }
                                  else
-                                 {  if (obj[v].value.includes('mple.')) {
+                                 {  if (obj[v].value.includes('mple.')) { //change search element for new mapping dataset
                                      value = <td><Link to={{
                                          pathname: '/details',
                                          state: {resourceClicked: obj[v].value}
@@ -208,7 +226,7 @@ class ResultTable2 extends React.Component {
 
         return(
             <div>
-                <table className={'table'}>
+                <table className='table'>
                     <thead>
                     <tr>
                         {this.displayHeaders()}
