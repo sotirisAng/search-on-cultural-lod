@@ -35,9 +35,9 @@ export default class ResourceDetailes extends React.Component {
     render() {
         return(
             <div>
-                <h1>
+                <p>
                     <ResultTable2 http_result={this.state.http_result}/>
-                </h1>
+                </p>
             </div>
         )
     }

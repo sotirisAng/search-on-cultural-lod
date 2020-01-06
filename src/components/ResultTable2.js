@@ -2,6 +2,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 // import ResourceDetails from "./pages/ResourceDetails";
 import {MakeHttpReq} from "./MakeHttpReq";
+import {LevenshteinDistance} from "./LevenshteinDistance";
 
 
 class ResultTable2 extends React.Component {
@@ -83,6 +84,39 @@ class ResultTable2 extends React.Component {
         return weight;
     }; //give credits for jaro distance
 
+    LevenshteinDistance = (a, b) => {
+        // Create empty edit distance matrix for all possible modifications of
+        // substrings of a to substrings of b.
+        const distanceMatrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+
+        // Fill the first row of the matrix.
+        // If this is first row then we're transforming empty string to a.
+        // In this case the number of transformations equals to size of a substring.
+        for (let i = 0; i <= a.length; i += 1) {
+            distanceMatrix[0][i] = i;
+        }
+
+        // Fill the first column of the matrix.
+        // If this is first column then we're transforming empty string to b.
+        // In this case the number of transformations equals to size of b substring.
+        for (let j = 0; j <= b.length; j += 1) {
+            distanceMatrix[j][0] = j;
+        }
+
+        for (let j = 1; j <= b.length; j += 1) {
+            for (let i = 1; i <= a.length; i += 1) {
+                const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+                distanceMatrix[j][i] = Math.min(
+                    distanceMatrix[j][i - 1] + 1, // deletion
+                    distanceMatrix[j - 1][i] + 1, // insertion
+                    distanceMatrix[j - 1][i - 1] + indicator, // substitution
+                );
+            }
+        }
+
+        return distanceMatrix[b.length][a.length];
+    };
+
     createSameAsRelation = async (sub, obj) => {
         let askQuery = {
             query: '',
@@ -104,6 +138,15 @@ class ResultTable2 extends React.Component {
     http_results = () => {};
 
     displayRows = () => {
+        let temp = this.props.triples.replace(/\?/g,'').split('. ');
+        let tr = [];
+        let triples=[];
+        console.log(temp[0]);
+        temp.map(triple => {
+          tr.push(triple.split(' ') ) ;
+        });
+        tr.pop();
+        console.log(tr);
         // let result  = this.props.http_result.reduce((res, obj) => {
         //     let n ='';
         //     if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
@@ -118,12 +161,12 @@ class ResultTable2 extends React.Component {
         //
         // });
         // results = this.http_results()
-        let c = 1;
+        // let c = 1;
         return(
             this.props.http_result.reduce((res, obj) => {
                 // console.log("name = "+ obj.name.value )
-                c++;
-                console.log(c);
+                // c++;
+                // console.log(c);
                 let n ='';
                 let nam = undefined;
                 if (obj.name) { nam = obj.name.value;}
@@ -131,13 +174,14 @@ class ResultTable2 extends React.Component {
                 if (obj.name1) {console.log("name1 = " +obj.name1.value);  n = obj.name1.value;}
                 if (obj.name2) {console.log("name2 = " +obj.name2.value);  n = obj.name2.value;}
                 if (n === ''){
-                    console.log('n='+n);
+                    // console.log('n='+n);
                     res.push(obj);
                 }
                 else if (nam !== undefined){
                     let jaro = this.distance(nam , n);
-                    console.log(jaro);
-                    if (jaro > 0.95) {
+                    let lev = this.LevenshteinDistance(nam, n);
+                    console.log(" jaro = "+jaro + " lev = "+ lev);
+                    if (jaro > 0.95 && ((1/lev) < 0.1)) {
                         console.log('yes');
                         console.log(obj.artist.value);
                         if(obj.ExternalLink){
@@ -159,15 +203,27 @@ class ResultTable2 extends React.Component {
                 return res;
             }, []).map((obj, index) =>{
                     const objkeys = Object.keys(obj);
-                    // console.log(obj)
-                    // console.log("objkeys = "+objkeys)
-                //     console.log("name = "+obj.name.value)
+                    tr.map(triple => {
+                        triples.push(
+                            {
+                                subject: obj[triple[0]].value,
+                                predicate: triple[1],
+                                object: obj[triple[2]].value
+                            }
+                        )
+                    })
+                    console.log(triples);
+
+                    // let x = 'cho';
+                    // console.log(obj[x].value);
+                    // console.log(objkeys);
+                    // console.log("name = "+obj.name.value)
                 // let n ='';
                 //      if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
                 //      if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
                 // let jaro = this.distance(obj.name.value , n)
                 //
-                console.log('c = ' + c);
+                // console.log('c = ' + c);
                     return(
                      <tr key={index}>
                          {objkeys.map((v,k) =>
@@ -219,7 +275,6 @@ class ResultTable2 extends React.Component {
             )
         }
     };
-
 
 
     render() {

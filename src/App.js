@@ -33,7 +33,8 @@ class App extends Component {
             end: '") '
         },
         external_services:[],
-        http_result: []
+        http_result: [],
+        triples: ''
     };
 
     filter = {
@@ -53,7 +54,7 @@ class App extends Component {
     // };
 
     passValue = (input_text, sub, custom_filter) => {
-        console.log(custom_filter);
+        // console.log(custom_filter);
         if (input_text !== '')
        {
            const filter = (custom_filter !== undefined ) ?
@@ -83,12 +84,12 @@ class App extends Component {
     passService = (input_text) => {
 
       let  artist_federated = {
-            europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
+            europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER (?name1 = "' ,
             input1 : input_text,
-            eupeana_end: '", "i" )}} ',
-            dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2. FILTER regex(?name2, "',
+            eupeana_end: '"@en)}} ',
+            dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2.  FILTER (lang(?name1) = "en")  FILTER (?name2 = "',
           input2 : input_text,
-          dbpedia_end: '","i")}}}'
+          dbpedia_end: '"@en)}}}'
         } ;
 
         this.state.external_services.push(artist_federated);
@@ -123,7 +124,8 @@ class App extends Component {
         query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + services_string + this.state.query_end,
             subjects:[],
             filters: [],
-            external_services: []
+            external_services: [],
+            triples: subjects_string
         })
     };
 
@@ -197,7 +199,7 @@ class App extends Component {
                            }}
                            passvalueType={'text'}
                            passSubject={this.passSubject}
-                           triple={"?artist edm:end ?died."}
+                           triple={"?artist edm:end ?died. "}
                            subject={'?died'}
                 />
                 <h3>Title</h3>
@@ -225,7 +227,7 @@ class App extends Component {
                            }}
                            passvalueType={'text'}
                            passSubject={this.passSubject}
-                           triple={"?cho dc:date ?date."}
+                           triple={"?cho dc:date ?date. "}
                            subject={'?date'}
                 />
                 <h3>Classification</h3>
@@ -249,7 +251,7 @@ class App extends Component {
 
                 <Route exact path="/" render={props => (
                     <React.Fragment>
-                        <ResultTable2 http_result={this.state.http_result}/>
+                        <ResultTable2 http_result={this.state.http_result} triples={this.state.triples}/>
                     </React.Fragment>
                 )}/>
                 <Route path="/details" render={(props) => <ResourceDetails {...props}/>} />
