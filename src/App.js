@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
-import {BrowserRouter as Router, Link, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
 import ResourceDetails from "./components/pages/ResourceDetails";
 // import {d3} from "node_modules/d3-sparql";
 
@@ -274,10 +274,13 @@ class App extends Component {
                         <ResultTable2 http_result={this.state.http_result} triples={this.state.triples}/>
                     </React.Fragment>
                 )}/>
-                <Route path="/:museum/:type/:id" exact component={ResourceDetails} />
-                {/*<Route path="/:museum/:id/:type" exact component={ResourceDetails} />*/}
-                <Route path="/:museum/:id" exact component={ResourceDetails} />
-                {/*<Route path="/:museum/:type/:id" exact render={(props) => <ResourceDetails {...props}/>} />*/}
+                {/*<Switch>*/}
+                    <Route path="/:museum/:type/:id(\d+)" exact component={ResourceDetails} />
+                    <Route path="/:museum/:id(\d+)/:type" exact component={ResourceDetails} />
+                    <Route path="/:museum/:id" exact component={ResourceDetails} />
+                    {/*<Route path="/:museum/:type/:id" exact render={(props) => <ResourceDetails {...props}/>} />*/}
+                {/*</Switch>*/}
+
             </div>
         </Router>
 
