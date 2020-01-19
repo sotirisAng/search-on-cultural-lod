@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Link, Route} from 'react-router-dom'
 import ResourceDetails from "./components/pages/ResourceDetails";
 // import {d3} from "node_modules/d3-sparql";
 
@@ -214,6 +214,13 @@ class App extends Component {
                            triple={"?artist edm:end ?died. "}
                            subject={'?died'}
                 />
+                <h3>Nationality</h3>
+                <InputTest passValue={this.passValue}
+                           passvalueType={'text'}
+                           passSubject={this.passSubject}
+                           triple={"?artist skos:note ?Nationality. "}
+                           subject={'?Nationality'}
+                />
                 <h3>Title</h3>
                 <InputTest passValue={this.passValue}
                            passvalueType={'text'}
@@ -256,7 +263,7 @@ class App extends Component {
                     triple={"?cho edm:hasView ?thumbnail. "}
                     subject={'?thumbnail'}
                 />
-                <button className={'btn btn-success'} onClick={this.builtQuery}>Build Query</button>
+                <Link to={{pathname:'/'}}><button className={'btn btn-success'} onClick={this.builtQuery}>Build Query</button></Link>
                 <button className={'btn btn-danger'} onClick={this.postQuery}>Post Query</button>
                 <button className={'btn btn-warning'} onClick={this.clearQuery}>Clear Query</button>
                 <button className={'btn btn-info'} onClick={this.showGraph}>Show Graph</button>
@@ -267,7 +274,10 @@ class App extends Component {
                         <ResultTable2 http_result={this.state.http_result} triples={this.state.triples}/>
                     </React.Fragment>
                 )}/>
-                <Route path="/:id" render={(props) => <ResourceDetails {...props}/>} />
+                <Route path="/:museum/:type/:id" exact component={ResourceDetails} />
+                {/*<Route path="/:museum/:id/:type" exact component={ResourceDetails} />*/}
+                <Route path="/:museum/:id" exact component={ResourceDetails} />
+                {/*<Route path="/:museum/:type/:id" exact render={(props) => <ResourceDetails {...props}/>} />*/}
             </div>
         </Router>
 

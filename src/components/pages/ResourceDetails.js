@@ -10,7 +10,13 @@ import {
     useParams
 } from "react-router-dom";
 
+// const LinkShow = ({match}) => {
+//      console.log(match.params.id)
+// }
 export default class ResourceDetailes extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
     state = {
         query: '',
@@ -25,6 +31,8 @@ export default class ResourceDetailes extends React.Component {
         http_result: [],
         triples:''
     };
+
+
 
     distance = (s1, s2, caseSensitive= true ) => {
         var m = 0;
@@ -127,9 +135,15 @@ export default class ResourceDetailes extends React.Component {
 
     // componentWillMount() {
     componentDidMount() {
+        console.log('match');
+        console.log(this.props.match);
+        const theLink = 'http://localhost:3000'+ this.props.match.url;
         // let {id} = useParams();
         // console.log(id);
-        let q = this.state.prefixes + this.state.query_start  +'<'+ this.props.location.state.resourceClicked +'>' + this.state.query_first_end;
+        // LinkShow();
+        let q = this.state.prefixes + this.state.query_start  +'<'+ theLink +'>' + this.state.query_first_end;
+        // let q = this.state.prefixes + this.state.query_start  +'<'+ this.props.location.state.resourceClicked +'>' + this.state.query_first_end;
+
         let searchVar ='';
         let  artist_federated = {
             europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
@@ -181,7 +195,8 @@ export default class ResourceDetailes extends React.Component {
                                     // console.log(obj.artist.value);
                                     if (obj.ExternalLink) {
                                         console.log(obj.ExternalLink.value);
-                                        this.createSameAsRelation(this.props.location.state.resourceClicked, obj.ExternalLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
+                                        // this.createSameAsRelation(this.props.location.state.resourceClicked, obj.ExternalLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
+                                        this.createSameAsRelation(theLink, obj.ExternalLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
                                             console.log('tora')
                                                 this.setState({
                                                     http_result: res.data.results.bindings
@@ -190,7 +205,8 @@ export default class ResourceDetailes extends React.Component {
                                         );});
                                     } else if (obj.SameAslLink) {
                                         console.log(obj.SameAslLink.value);
-                                        this.createSameAsRelation(this.props.location.state.resourceClicked, obj.SameAslLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
+                                        // this.createSameAsRelation(this.props.location.state.resourceClicked, obj.SameAslLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
+                                        this.createSameAsRelation(theLink, obj.SameAslLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
                                             console.log('tora2')
 
                                             this.setState({
@@ -216,6 +232,16 @@ export default class ResourceDetailes extends React.Component {
 
 
                         })
+                    }
+                    else{
+                        MakeHttpReq('sparql', this.state.query).then((res) =>{
+                                console.log('tora3')
+
+                                this.setState({
+                                    http_result: res.data.results.bindings
+                                })
+                            }
+                        );
                     }
             })
             }

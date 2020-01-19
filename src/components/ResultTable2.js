@@ -9,6 +9,10 @@ import {Curve2} from "./Curve2";
 
 class ResultTable2 extends React.Component {
 
+    constructor(props) {
+        super(props);
+    }
+
     state = {
         triples: []
     };
@@ -154,7 +158,7 @@ class ResultTable2 extends React.Component {
                 tr.push(triple.split(' ') ) ;
             });
             tr.pop();
-            console.log(tr);
+            // console.log(tr);
         // }
 
         // let result  = this.props.http_result.reduce((res, obj) => {
@@ -173,52 +177,7 @@ class ResultTable2 extends React.Component {
         // results = this.http_results()
         // let c = 1;
         return(
-            this.props.http_result.reduce((res, obj) => {
-                console.log(obj)
-                // c++;
-                let n ='';
-                let nam = '';
-                if (obj.name) {
-                    nam = obj.name.value;
-                    console.log(nam);
-                    if (obj.name1) {console.log("name1 = " +obj.name1.value);  n = obj.name1.value;}
-                    else if (obj.name2) {console.log("name2 = " +obj.name2.value);  n = obj.name2.value;}
-                    else if (n === ''){
-                        console.log('n='+n);
-                        res.push(obj);
-                    }
-
-                        let jaro = this.distance(nam , n);
-                        // let lev = this.LevenshteinDistance(nam, n);
-                        console.log(" jaro = "+jaro );
-                        if (jaro > 0.95) {
-                            // if (jaro > 0.95 && ((1/lev) < 0.1)) {
-                            console.log('yes');
-                            console.log(obj.artist.value);
-                            if(obj.ExternalLink){
-                                console.log(obj.ExternalLink.value);
-                                this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
-                            }
-                            else if (obj.SameAslLink){
-                                console.log(obj.SameAslLink.value);
-                                this.createSameAsRelation(obj.artist.value, obj.SameAslLink.value)
-                            }
-                            // console.log(obj.ExternalLink.value);
-                            // this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
-                            if (obj.name1) delete obj.name1;
-                            if (obj.name2) delete obj.name2;
-                            res.push(obj);
-                        }
-
-
-                }
-                else if (n === ''){
-                    // console.log('n='+n);
-                    res.push(obj);
-                }
-                // console.log( 'result = '+ res)
-                return res;
-            }, []).map((obj, index) =>{
+            this.props.http_result.map((obj, index) =>{
                     const objkeys = Object.keys(obj);
                     console.log(triples)
                 if(triples !== []) {
@@ -231,7 +190,7 @@ class ResultTable2 extends React.Component {
                                 object: obj[triple[2]].value
                             }
                         )
-                    })
+                    });
                     console.log(triples);
                     this.state.triples = triples;
                 }
