@@ -226,7 +226,7 @@ class ResultTable2 extends React.Component {
                                             }
                                      }} > {obj[v].value} </Link></td>
                                  } else {
-                                     value = <td><a href={obj[v].value}> {obj[v].value} </a></td>
+                                     value = <td><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>
                                  }}
                                  return value
                              }
@@ -240,6 +240,49 @@ class ResultTable2 extends React.Component {
             )
         )
     };
+
+    showPrefix = (url) =>{
+        switch(url) {
+            case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':
+                return 'rdf:type';
+            case 'http://www.europeana.eu/schemas/edm/end':
+                return 'edm:end';
+            case 'http://www.w3.org/2004/02/skos/core#note':
+                return 'skos:note';
+            case 'http://www.w3.org/2004/02/skos/core#prefLabel':
+                return 'skos:prefLabel';
+            case 'http://www.europeana.eu/schemas/edm/EuropeanaAggregation':
+                return 'edm:EuropeanaAggregation';
+            case 'http://www.europeana.eu/schemas/edm/aggregatedCHO':
+                return 'edm:aggregatedCHO';
+            case 'http://www.europeana.eu/schemas/edm/hasView':
+                return 'edm:hasView';
+            case 'http://www.europeana.eu/schemas/edm/ProvidedCHO':
+                return 'edm:ProvidedCHO';
+            case 'http://purl.org/dc/elements/1.1/date':
+                return 'dc:date';
+            case 'http://purl.org/dc/elements/1.1/title':
+                return 'dc:title';
+            case 'http://purl.org/dc/elements/1.1/type':
+                return 'dc:type';
+            case 'http://purl.org/dc/elements/1.1/creator':
+                return 'dc:creator';
+            case 'http://purl.org/dc/terms/medium':
+                return 'dct:medium';
+            case 'http://www.w3.org/2002/07/owl#sameAs':
+                return 'owl:sameAs';
+            default:
+            return url;
+        }
+    }
+    //   http://www.europeana.eu/schemas/edm/ProvidedCHO
+    // http://purl.org/dc/elements/1.1/creator 	http://localhost:3000/moma/artist/6210
+    // http://purl.org/dc/elements/1.1/date 	1896
+    // http://purl.org/dc/elements/1.1/title 	Ferdinandsbrücke Project, Vienna, Austria , Elevation, preliminary version
+    // http://purl.org/dc/elements/1.1/type 	A&D Architectural Drawing
+    // http://purl.org/dc/terms/medium
+
+
 
     displayHeaders = () => {
         if (this.props.http_result[0] !== undefined) {
