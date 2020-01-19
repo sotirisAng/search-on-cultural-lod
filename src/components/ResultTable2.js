@@ -1,11 +1,17 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-// import ResourceDetails from "./pages/ResourceDetails";
+import ResourceDetails from "./pages/ResourceDetails";
 import {MakeHttpReq} from "./MakeHttpReq";
 import {LevenshteinDistance} from "./LevenshteinDistance";
+import {CurveLinks} from "./CurveLinks";
+import {Curve2} from "./Curve2";
 
 
 class ResultTable2 extends React.Component {
+
+    state = {
+        triples: []
+    };
 
     distance = (s1, s2, caseSensitive= true ) => {
         var m = 0;
@@ -128,7 +134,8 @@ class ResultTable2 extends React.Component {
         };
         askQuery.query = askQuery.prefixes + askQuery.query_ask + '<' + sub + '> owl:sameAs <' + obj + '>' + askQuery.query_end;
         let res = await MakeHttpReq('sparql', askQuery.query);
-        if (!res.data.boolean) {
+        console.log(res.data.boolean);
+        if (res.data.boolean) {
             askQuery.query = askQuery.prefixes + askQuery.query_insert + '<' + sub + '> owl:sameAs <' + obj + '>' + askQuery.query_end;
             console.log('askQuery.query');
         }
@@ -138,15 +145,18 @@ class ResultTable2 extends React.Component {
     http_results = () => {};
 
     displayRows = () => {
-        let temp = this.props.triples.replace(/\?/g,'').split('. ');
-        let tr = [];
-        let triples=[];
-        console.log(temp[0]);
-        temp.map(triple => {
-          tr.push(triple.split(' ') ) ;
-        });
-        tr.pop();
-        console.log(tr);
+        // if(this.props.triples !== ''){
+            let temp = this.props.triples.replace(/\?/g,'').split('. ');
+            let tr = [];
+            let triples=[];
+            // console.log(temp[0]);
+            temp.map(triple => {
+                tr.push(triple.split(' ') ) ;
+            });
+            tr.pop();
+            console.log(tr);
+        // }
+
         // let result  = this.props.http_result.reduce((res, obj) => {
         //     let n ='';
         //     if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
@@ -164,45 +174,54 @@ class ResultTable2 extends React.Component {
         // let c = 1;
         return(
             this.props.http_result.reduce((res, obj) => {
-                // console.log("name = "+ obj.name.value )
+                console.log(obj)
                 // c++;
-                // console.log(c);
                 let n ='';
-                let nam = undefined;
-                if (obj.name) { nam = obj.name.value;}
-                // if (obj.name) { }
-                if (obj.name1) {console.log("name1 = " +obj.name1.value);  n = obj.name1.value;}
-                if (obj.name2) {console.log("name2 = " +obj.name2.value);  n = obj.name2.value;}
-                if (n === ''){
-                    // console.log('n='+n);
-                    res.push(obj);
-                }
-                else if (nam !== undefined){
-                    let jaro = this.distance(nam , n);
-                    let lev = this.LevenshteinDistance(nam, n);
-                    console.log(" jaro = "+jaro + " lev = "+ lev);
-                    if (jaro > 0.95 && ((1/lev) < 0.1)) {
-                        console.log('yes');
-                        console.log(obj.artist.value);
-                        if(obj.ExternalLink){
-                            console.log(obj.ExternalLink.value);
-                            this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
-                        }
-                        else if (obj.SameAslLink){
-                            console.log(obj.SameAslLink.value);
-                            this.createSameAsRelation(obj.artist.value, obj.SameAslLink.value)
-                        }
-                        // console.log(obj.ExternalLink.value);
-                        // this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
-                        if (obj.name1) delete obj.name1;
-                        if (obj.name2) delete obj.name2;
+                let nam = '';
+                if (obj.name) {
+                    nam = obj.name.value;
+                    console.log(nam);
+                    if (obj.name1) {console.log("name1 = " +obj.name1.value);  n = obj.name1.value;}
+                    else if (obj.name2) {console.log("name2 = " +obj.name2.value);  n = obj.name2.value;}
+                    else if (n === ''){
+                        console.log('n='+n);
                         res.push(obj);
                     }
+
+                        let jaro = this.distance(nam , n);
+                        // let lev = this.LevenshteinDistance(nam, n);
+                        console.log(" jaro = "+jaro );
+                        if (jaro > 0.95) {
+                            // if (jaro > 0.95 && ((1/lev) < 0.1)) {
+                            console.log('yes');
+                            console.log(obj.artist.value);
+                            if(obj.ExternalLink){
+                                console.log(obj.ExternalLink.value);
+                                this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
+                            }
+                            else if (obj.SameAslLink){
+                                console.log(obj.SameAslLink.value);
+                                this.createSameAsRelation(obj.artist.value, obj.SameAslLink.value)
+                            }
+                            // console.log(obj.ExternalLink.value);
+                            // this.createSameAsRelation(obj.artist.value, obj.ExternalLink.value)
+                            if (obj.name1) delete obj.name1;
+                            if (obj.name2) delete obj.name2;
+                            res.push(obj);
+                        }
+
+
+                }
+                else if (n === ''){
+                    // console.log('n='+n);
+                    res.push(obj);
                 }
                 // console.log( 'result = '+ res)
                 return res;
             }, []).map((obj, index) =>{
                     const objkeys = Object.keys(obj);
+                if(triples !== []) {
+
                     tr.map(triple => {
                         triples.push(
                             {
@@ -213,7 +232,8 @@ class ResultTable2 extends React.Component {
                         )
                     })
                     console.log(triples);
-
+                    this.state.triples = triples;
+                }
                     // let x = 'cho';
                     // console.log(obj[x].value);
                     // console.log(objkeys);
@@ -237,11 +257,14 @@ class ResultTable2 extends React.Component {
                                  if (obj[v].type !== 'uri')  {
                                       value = <td>{obj[v].value}</td> }
                                  else
-                                 {  if (obj[v].value.includes('mple.')) { //change search element for new mapping dataset
+                                 {  if (obj[v].value.includes('localhost')) { //change search element for new mapping dataset
+                                     let id=obj[v].value.split('3000/')[1]
                                      value = <td><Link to={{
-                                         pathname: '/details',
-                                         state: {resourceClicked: obj[v].value}
-                                     }}> {obj[v].value} </Link></td>
+                                         pathname: '/'+id,
+                                         // path:'/details',
+                                         state: {resourceClicked: obj[v].value,
+                                            }
+                                     }} > {obj[v].value} </Link></td>
                                  } else {
                                      value = <td><a href={obj[v].value}> {obj[v].value} </a></td>
                                  }}
@@ -276,11 +299,18 @@ class ResultTable2 extends React.Component {
         }
     };
 
+    displayGraph(){
+        if (this.state.triples.length > 0 && this.props.showGraph)
+            {console.log(this.state.triples)
+            return <Curve2 triples={this.state.triples}/>}
+    }
+
 
     render() {
 
         return(
             <div>
+                { this.displayGraph()}
                 <table className='table'>
                     <thead>
                     <tr>

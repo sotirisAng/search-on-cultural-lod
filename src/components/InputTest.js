@@ -49,7 +49,7 @@ export class InputTest extends React.Component{
         res.data.results.bindings.map((obj,index) => {
             list.push(obj[sub].value)
         });
-        console.log(list);
+        // console.log(list);
         this.setState({
             suggestions: list
         })

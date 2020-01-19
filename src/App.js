@@ -10,12 +10,14 @@ import ResourceDetails from "./components/pages/ResourceDetails";
 
 import './App.css';
 import {MakeHttpReq} from "./components/MakeHttpReq";
+import {CurveLinks} from "./components/CurveLinks";
+import {Curve2} from "./components/Curve2";
 
 class App extends Component {
     state = {
         query: '',
         query_start: 'SELECT distinct * WHERE{ ',
-        query_end: ' }',
+        query_end: ' } limit 1000',
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
         // artist: '?cho dc:creator ?artist. ?artist skos:prefLabel ?name. ',
         // artist_filter: {
@@ -34,7 +36,8 @@ class App extends Component {
         },
         external_services:[],
         http_result: [],
-        triples: ''
+        triples: '',
+        showGraph: false
     };
 
     filter = {
@@ -43,6 +46,9 @@ class App extends Component {
         end: '")'
     };
 
+    // componentDidMount() {
+    //     this.clearQuery();
+    // }
 
     // passValue = (input_text) => {
     //     this.setState(prevState => ({
@@ -84,12 +90,12 @@ class App extends Component {
     passService = (input_text) => {
 
       let  artist_federated = {
-            europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER (?name1 = "' ,
+            europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
             input1 : input_text,
-            eupeana_end: '"@en)}} ',
-            dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2.  FILTER (lang(?name1) = "en")  FILTER (?name2 = "',
+            eupeana_end: '", "i")}} ',
+            dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2.  FILTER (lang(?name1) = "en")  FILTER regex(?name2, "',
           input2 : input_text,
-          dbpedia_end: '"@en)}}}'
+          dbpedia_end: '", "i")}}}'
         } ;
 
         this.state.external_services.push(artist_federated);
@@ -134,7 +140,8 @@ class App extends Component {
             query: '',
             subjects:[],
             filters: [],
-            external_services: []
+            external_services: [],
+            triples:''
         })
     };
 
@@ -155,6 +162,11 @@ class App extends Component {
 
 
 
+    showGraph = () => {
+        this.setState({
+            showGraph: !this.state.showGraph
+        })
+    };
 
 
 
@@ -172,7 +184,7 @@ class App extends Component {
                            passService={this.passService}
                            passvalueType={'text'}
                            passSubject={this.passSubject}
-                           triple={"?cho dc:creator ?artist. ?artist skos:prefLabel ?name. "}
+                           triple={"?artist skos:prefLabel ?name. "}
                            subject={'?name'}
                 />
                 <h3>Lived Between (Years)</h3>
@@ -206,7 +218,7 @@ class App extends Component {
                 <InputTest passValue={this.passValue}
                            passvalueType={'text'}
                            passSubject={this.passSubject}
-                           triple={"?cho dct:title ?title. "}
+                           triple={"?cho dc:title ?title. ?cho dc:creator ?artist. "}
                            subject={'?title'}
                 />
                 <h3>Medium</h3>
@@ -247,14 +259,15 @@ class App extends Component {
                 <button className={'btn btn-success'} onClick={this.builtQuery}>Build Query</button>
                 <button className={'btn btn-danger'} onClick={this.postQuery}>Post Query</button>
                 <button className={'btn btn-warning'} onClick={this.clearQuery}>Clear Query</button>
-                <h3>{this.state.query} </h3>
+                <button className={'btn btn-info'} onClick={this.showGraph}>Show Graph</button>
+                <textarea value={this.state.query}/>
 
                 <Route exact path="/" render={props => (
                     <React.Fragment>
                         <ResultTable2 http_result={this.state.http_result} triples={this.state.triples}/>
                     </React.Fragment>
                 )}/>
-                <Route path="/details" render={(props) => <ResourceDetails {...props}/>} />
+                <Route path="/:id" render={(props) => <ResourceDetails {...props}/>} />
             </div>
         </Router>
 
