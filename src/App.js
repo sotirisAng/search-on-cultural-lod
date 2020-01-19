@@ -87,20 +87,20 @@ class App extends Component {
         // console.log(this.state.filters);
     };
 
-    passService = (input_text) => {
-
-      let  artist_federated = {
-            europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
-            input1 : input_text,
-            eupeana_end: '", "i")}} ',
-            dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2.  FILTER (lang(?name1) = "en")  FILTER regex(?name2, "',
-          input2 : input_text,
-          dbpedia_end: '", "i")}}}'
-        } ;
-
-        this.state.external_services.push(artist_federated);
-
-    };
+    // passService = (input_text) => {
+    //
+    //   let  artist_federated = {
+    //         europeanaStart : ' optional { {SERVICE <http://sparql.europeana.eu> { ?ExternalLink a edm:Agent .  ?ExternalLink skos:prefLabel ?name1. FILTER (lang(?name1) = "en") FILTER regex(?name1, "' ,
+    //         input1 : input_text,
+    //         eupeana_end: '", "i")}} ',
+    //         dbpedia_start: 'union {SERVICE <http://dbpedia.org/sparql/> { ?SameAsLink rdf:type dbo:Person; rdf:type dbo:Artist; rdf:type foaf:Person; foaf:name ?name2.  FILTER (lang(?name1) = "en")  FILTER regex(?name2, "',
+    //       input2 : input_text,
+    //       dbpedia_end: '", "i")}}}'
+    //     } ;
+    //
+    //     this.state.external_services.push(artist_federated);
+    //
+    // };
 
     passSubject = (triple) => {
         // this.setState({
@@ -181,7 +181,7 @@ class App extends Component {
                 {/*<h2>Picasso</h2>*/}
                 <h3>Artist</h3>
                 <InputTest passValue={this.passValue}
-                           passService={this.passService}
+                           // passService={this.passService}
                            passvalueType={'text'}
                            passSubject={this.passSubject}
                            triple={"?artist skos:prefLabel ?name. "}

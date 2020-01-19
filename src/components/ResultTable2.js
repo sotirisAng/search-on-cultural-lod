@@ -220,6 +220,7 @@ class ResultTable2 extends React.Component {
                 return res;
             }, []).map((obj, index) =>{
                     const objkeys = Object.keys(obj);
+                    console.log(triples)
                 if(triples !== []) {
 
                     tr.map(triple => {
@@ -259,7 +260,7 @@ class ResultTable2 extends React.Component {
                                  else
                                  {  if (obj[v].value.includes('localhost')) { //change search element for new mapping dataset
                                      let id=obj[v].value.split('3000/')[1]
-                                     value = <td><Link to={{
+                                     value = <td style={{maxWidth: 200, overflow:'hidden'}}><Link to={{
                                          pathname: '/'+id,
                                          // path:'/details',
                                          state: {resourceClicked: obj[v].value,
