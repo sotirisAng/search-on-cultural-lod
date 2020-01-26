@@ -150,14 +150,14 @@ class ResultTable2 extends React.Component {
 
     displayRows = () => {
         // if(this.props.triples !== ''){
-            let temp = this.props.triples.replace(/\?/g,'').split('. ');
-            let tr = [];
+        //     let temp = this.props.triples.replace(/\?/g,'').split('. ');
+        //     let tr = [];
             let triples=[];
             // console.log(temp[0]);
-            temp.map(triple => {
-                tr.push(triple.split(' ') ) ;
-            });
-            tr.pop();
+            // temp.map(triple => {
+            //     tr.push(triple.split(' ') ) ;
+            // });
+            // tr.pop();
             // console.log(tr);
         // }
 
@@ -179,10 +179,18 @@ class ResultTable2 extends React.Component {
         return(
             this.props.http_result.map((obj, index) =>{
                     const objkeys = Object.keys(obj);
-                    console.log(triples)
-                if(triples !== []) {
-
-                    tr.map(triple => {
+                    const i = index;
+                    console.log(this.props.triples)
+                if(this.props.triples.length > 0 ) {
+                    // console.log(typeof(triples));
+                    // console.log(obj);
+                    this.props.triples.map(triple => {
+                        // console.log(triple)
+                        // if(obj[triple[0]] === undefined || obj[triple[2]] === undefined){
+                        //     return;
+                        // }
+                        // else
+                        if(obj[triple[0]] !== undefined && obj[triple[2]] !== undefined)
                         triples.push(
                             {
                                 subject: obj[triple[0]].value,
@@ -193,8 +201,11 @@ class ResultTable2 extends React.Component {
                     });
                     console.log(triples);
                     this.state.triples = triples;
+                    // this.setState({
+                    //     triples: triples
+                    // });
                 }
-                    // let x = 'cho';
+                    let setImg = false;
                     // console.log(obj[x].value);
                     // console.log(objkeys);
                     // console.log("name = "+obj.name.value)
@@ -206,26 +217,36 @@ class ResultTable2 extends React.Component {
                 // console.log('c = ' + c);
                     return(
                      <tr key={index}>
-                         {objkeys.map((v,k) =>
-
-                                // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
-                                // var v_s = v.toString()
+                         {// var v_s = v.toString()
+                             objkeys.map((v,k) =>
                              {
+                                 // console.log(obj[v].value)
+                                 // console.log(setImg)
+                                 if(k===0 && obj[v].value === 'http://www.europeana.eu/schemas/edm/hasView') {
+                                 setImg = true;
+
+                                 }
+                                 // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
                                  let value;
                                  // if (obj[v].type === 'uri' && obj[v].value.includes('mple.')) {console.log(obj[v].value)}
                                  // return (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
                                  if (obj[v].type !== 'uri')  {
-                                      value = <td>{obj[v].value}</td> }
+                                      value = <td style={{maxWidth: 300, overflow:'hidden'}}>{obj[v].value}</td>;
+                                 }
                                  else
                                  {  if (obj[v].value.includes('localhost')) { //change search element for new mapping dataset
-                                     let id=obj[v].value.split('3000/')[1]
-                                     value = <td style={{maxWidth: 200, overflow:'hidden'}}><Link to={{
+                                     let id=obj[v].value.split('3000/')[1];
+                                     value = <td style={{maxWidth: 300, overflow:'hidden'}}><Link to={{
                                          pathname: '/'+id,
                                          // path:'/details',
                                          state: {resourceClicked: obj[v].value,
                                             }
                                      }} > {obj[v].value} </Link></td>
-                                 } else {
+                                 }
+                                 else if(k===1 && setImg){
+                                     value = <td><img alt={obj[v].value} src={obj[v].value}/></td>
+                                 }
+                                 else {
                                      value = <td><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>
                                  }}
                                  return value
@@ -271,17 +292,12 @@ class ResultTable2 extends React.Component {
                 return 'dct:medium';
             case 'http://www.w3.org/2002/07/owl#sameAs':
                 return 'owl:sameAs';
+            case 'http://www.openarchives.org/ore/terms/isAggregatedBy':
+                return 'ore:isAggregatedBy';
             default:
             return url;
         }
     }
-    //   http://www.europeana.eu/schemas/edm/ProvidedCHO
-    // http://purl.org/dc/elements/1.1/creator 	http://localhost:3000/moma/artist/6210
-    // http://purl.org/dc/elements/1.1/date 	1896
-    // http://purl.org/dc/elements/1.1/title 	Ferdinandsbrücke Project, Vienna, Austria , Elevation, preliminary version
-    // http://purl.org/dc/elements/1.1/type 	A&D Architectural Drawing
-    // http://purl.org/dc/terms/medium
-
 
 
     displayHeaders = () => {
@@ -294,8 +310,8 @@ class ResultTable2 extends React.Component {
             // console.log(temp2);
             return(
                    temp2.map((obj, index) =>
-                       <th key={index}>
-                           {obj}
+                       <th key={index} >
+                           {obj.toLocaleUpperCase()}
                        </th>
                    )
             )
@@ -303,8 +319,12 @@ class ResultTable2 extends React.Component {
     };
 
     displayGraph(){
-        if (this.state.triples.length > 0 && this.props.showGraph)
+        // console.log(this.state.triples.length)
+        // console.log(this.props.showGraph)
+
+        if (this.props.showGraph)
             {console.log(this.state.triples)
+            console.log('showGraph')
             return <Curve2 triples={this.state.triples}/>}
     }
 
@@ -314,8 +334,8 @@ class ResultTable2 extends React.Component {
         return(
             <div>
                 { this.displayGraph()}
-                <table className='table'>
-                    <thead>
+                <table className='table table-striped'>
+                    <thead className={'thead-dark'}>
                     <tr>
                         {this.displayHeaders()}
                     </tr>

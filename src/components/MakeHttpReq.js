@@ -11,7 +11,7 @@ export function MakeHttpReq(urlEnding,query ) {
             'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
         }
     };
-    let url = "http://localhost:3030/MomaLocal/"+urlEnding
+    let url = "http://localhost:3030/MomaLocal2/"+urlEnding
    return axios.post(url, query , config )
         .then((res) => {
             console.log(res);

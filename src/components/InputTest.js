@@ -88,7 +88,7 @@ export class InputTest extends React.Component{
     selectSuggestion = (obj) => {
         // prevent.default
         this.setState({ input_text: obj, suggestions: []});
-        console.log(obj);
+        // console.log(obj);
     };
 
     // handleInputFocus = () => {
@@ -122,11 +122,9 @@ export class InputTest extends React.Component{
         return(
             <form onSubmit={this.onSubmit} className={'form-group'} >
 				<div className="dropdown">
-                    <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder="Add.." value={this.state.input_text} onChange={this.onChange}  />
-                    <input type='submit' value="Submit" className={"btn btn-danger"} />
-                    {true ?
-                        this.showSuggestions()
-                        : null}
+                    <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder={this.props.placeholder} value={this.state.input_text} onChange={this.onChange}  />
+                    <input type='submit' value="Submit" className={"btn btn-danger"} data-toggle={"button"} aria-pressed={"false"}/>
+                    {this.showSuggestions()}
                 </div>
 			</form>
         )
