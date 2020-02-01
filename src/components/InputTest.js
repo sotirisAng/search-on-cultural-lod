@@ -10,7 +10,7 @@ export class InputTest extends React.Component{
         this.selectSuggestion = this.selectSuggestion.bind(this);
     }
     state = {
-        input_text: '',
+        input_text: this.props.default_value,
 
         focus: false,
         suggestions:[],
@@ -28,10 +28,49 @@ export class InputTest extends React.Component{
             between: ', "',
             value: this.input_text,
             end: '", "i") '
-        }
+        },
+        plusbtn_value: '+',
+        plusbtn_clicked: this.props.btn,
+        clear: this.props.clear_inputs,
+        couldClear:false
+
 
     };
 
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.clear !== undefined){
+
+            console.log('btn '+this.state.plusbtn_clicked);
+            console.log('props.clear '+this.props.clear);
+            if(this.state.couldClear){
+                this.state.clear = this.props.clear;
+                // this.state.input_text= '';
+                // this.setState({
+                //     clear: this.props.clear
+                // })
+                if(this.state.clear){
+
+                    this.clearInput()
+                }
+            }
+
+            console.log('state.clear '+this.state.clear);
+        }
+
+
+    }
+
+    clearInput = () => {
+        // this.setState({
+        //     plusbtn_clicked: false,
+        //     input_text: ''
+        // })
+        this.state.clear = false;
+        this.state.plusbtn_clicked= false;
+        this.state.input_text= '';
+        this.state.couldClear = false;
+    };
 
     onChange = async (e) => {
         let filter = {
@@ -42,6 +81,7 @@ export class InputTest extends React.Component{
             input_text: e.target.value,
             filter: filter
         });
+        this.state.clear = false;
         let query = this.state.prefixes + this.state.query_start + this.state.query_triple + Object.values(filter).join('') + this.state.query_end;
         let res = await MakeHttpReq('sparql', query);
         const sub = res.data.head.vars[0];
@@ -111,19 +151,31 @@ export class InputTest extends React.Component{
         }
         if (this.state.input_text !== '' || this.state.input_text !== false)
         this.props.passSubject(this.props.triple);
+        this.setState({
+            plusbtn_clicked:  true,
+            clear: false,
+            couldClear:true
+        })
         // this.props.builtQuery(this.state.input_text);
         // this.setState({input_text: ''})
 
     };
 
 
+    componentDidMount() {
+        if(this.props.clear){
+            this.setState({
+                plusbtn_clicked: false
+            })
+        }
+    }
 
     render() {
         return(
-            <form onSubmit={this.onSubmit} className={'form-group'} >
+            <form onSubmit={this.onSubmit} className={'form-group'}  >
 				<div className="dropdown">
                     <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder={this.props.placeholder} value={this.state.input_text} onChange={this.onChange}  />
-                    <input type='submit' value="Submit" className={"btn btn-danger"} data-toggle={"button"} aria-pressed={"false"}/>
+                    <input type='submit' value={this.state.plusbtn_clicked ?  '✔' : '+' } className={this.state.plusbtn_clicked ?  'btn btn-success ' : 'btn btn-danger'} disabled={this.state.plusbtn_clicked}/>
                     {this.showSuggestions()}
                 </div>
 			</form>

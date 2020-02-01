@@ -1,17 +1,17 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import ResourceDetails from "./pages/ResourceDetails";
+// import ResourceDetails from "./pages/ResourceDetails";
 import {MakeHttpReq} from "./MakeHttpReq";
-import {LevenshteinDistance} from "./LevenshteinDistance";
-import {CurveLinks} from "./CurveLinks";
+// import {LevenshteinDistance} from "./LevenshteinDistance";
+// import {CurveLinks} from "./CurveLinks";
 import {Curve2} from "./Curve2";
 
 
 class ResultTable2 extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
+    // constructor(props) {
+    //     super(props);
+    // }
 
     state = {
         triples: []

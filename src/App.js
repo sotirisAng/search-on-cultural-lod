@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 // import axios from 'axios';
-import logo from './logo.svg';
+import logo from './LOGO_SEMANTICS_WHITE.png';
 import InputTest from './components/InputTest';
 import ResultTable2 from './components/ResultTable2';
-import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Link, Route} from 'react-router-dom'
 import ResourceDetails from "./components/pages/ResourceDetails";
 // import {d3} from "node_modules/d3-sparql";
 
 
 import './App.css';
 import {MakeHttpReq} from "./components/MakeHttpReq";
-import {CurveLinks} from "./components/CurveLinks";
-import {Curve2} from "./components/Curve2";
+// import {CurveLinks} from "./components/CurveLinks";
+// import {Curve2} from "./components/Curve2";
 
 class App extends Component {
     state = {
@@ -37,7 +37,10 @@ class App extends Component {
         external_services:[],
         http_result: [],
         triples: '',
-        showGraph: false
+        showGraph: false,
+        clear_inputs: false,
+        btn:false,
+        input_value:''
     };
 
     filter = {
@@ -107,6 +110,7 @@ class App extends Component {
         //     subjects: this.state.subjects.push(triple)
         // });
         this.state.subjects.push(triple);
+        this.state.clear_inputs = false;
         console.log(this.state.subjects);
 
     };
@@ -133,13 +137,16 @@ class App extends Component {
             tr.push(triple.split(' ') ) ;
         });
         tr.pop();
+        // this.state.clear_inputs = true;
         this.setState({
         query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + services_string + this.state.query_end,
             subjects:[],
             filters: [],
             external_services: [],
-            triples: tr
+            triples: tr,
+            // clear_inputs: true
         })
+
     };
 
     clearQuery = () =>{
@@ -148,9 +155,14 @@ class App extends Component {
             subjects:[],
             filters: [],
             external_services: [],
-            triples:''
-        })
+            triples:'',
+            btn:false,
+            input_value:'',
+            clear_inputs: true
+        });
     };
+
+
 
     postQuery = () => {
         // let data: {
@@ -158,6 +170,9 @@ class App extends Component {
         //     output: {"json"}
         // };
 
+        this.setState({
+            clear_inputs: true
+        })
         MakeHttpReq('sparql', this.state.query).then((res) =>{
             this.setState({
                 http_result: res.data.results.bindings
@@ -177,12 +192,15 @@ class App extends Component {
 
 
 
-  render() {
+
+    render() {
     return (
         <Router>
             <div className="App">
                 <div className="App-header">
+                    <Link to={{pathname:'/'}} >
                     <img src={logo} className="App-logo" alt="logo" />
+                    </Link>
                     <h2>Search of Semantically Integrated Museum Data </h2>
                 </div>
                 {/*<h2>Picasso</h2>*/}
@@ -197,6 +215,9 @@ class App extends Component {
                                        triple={"?artist skos:prefLabel ?name. "}
                                        subject={'?name'}
                                        placeholder={'Name'}
+                                       clear={this.state.clear_inputs}
+                                       // default_value={this.state.input_value}
+                                       // default_btn={this.state.btn}
                             />
                             {/*<h3>Lived Between (Years)</h3>*/}
                             <InputTest passValue={this.passValue}
@@ -212,6 +233,7 @@ class App extends Component {
                                        triple={"?artist edm:begin ?born. "}
                                        subject={'?born'}
                                        placeholder={'Born after year'}
+                                       clear={this.state.clear_inputs}
                             />
                             <InputTest passValue={this.passValue}
                                        custom_filter={{
@@ -226,6 +248,7 @@ class App extends Component {
                                        triple={"?artist edm:end ?died. "}
                                        subject={'?died'}
                                        placeholder={'Died before year'}
+                                       clear={this.state.clear_inputs}
                             />
                             {/*<h3>Nationality</h3>*/}
                             <InputTest passValue={this.passValue}
@@ -234,6 +257,7 @@ class App extends Component {
                                        triple={"?artist skos:note ?Nationality. "}
                                        subject={'?Nationality'}
                                        placeholder={'Nationality'}
+                                       clear={this.state.clear_inputs}
                             />
                         </div>
                         <div className={'card col-md-6'}>
@@ -245,6 +269,7 @@ class App extends Component {
                                        triple={"?cho dc:title ?title. ?cho dc:creator ?artist. "}
                                        subject={'?title'}
                                        placeholder={'Title'}
+                                       clear={this.state.clear_inputs}
                             />
                             {/*<h3>Medium</h3>*/}
                             <InputTest passValue={this.passValue}
@@ -253,13 +278,14 @@ class App extends Component {
                                        triple={"?cho dct:medium ?medium. "}
                                        subject={'?medium'}
                                        placeholder={'Medium'}
+                                       clear={this.state.clear_inputs}
                             />
                             {/*<h3>Date</h3>*/}
                             <InputTest passValue={this.passValue}
                                        custom_filter={{
-                                           start: ' FILTER(',
+                                           start: ' FILTER regex(',
                                            subject: '',
-                                           between: '= "',
+                                           between: ', "',
                                            value: '',
                                            end: '") '
                                        }}
@@ -268,6 +294,7 @@ class App extends Component {
                                        triple={"?cho dc:date ?date. "}
                                        subject={'?date'}
                                        placeholder={'Date'}
+                                       clear={this.state.clear_inputs}
                             />
                             {/*<h3>Classification</h3>*/}
                             <InputTest passValue={this.passValue}
@@ -276,6 +303,7 @@ class App extends Component {
                                        triple={"?cho dc:type ?classification. "}
                                        subject={'?classification'}
                                        placeholder={'Classification'}
+                                       clear={this.state.clear_inputs}
                             />
                             {/*<h3>Thumbnail</h3>*/}
                             {/*<InputTest*/}

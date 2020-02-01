@@ -2,21 +2,21 @@ import React from 'react';
 // import axios from 'axios';
 import ResultTable2 from "../ResultTable2";
 import {MakeHttpReq} from "../MakeHttpReq";
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useParams
-} from "react-router-dom";
+// import {
+//     BrowserRouter as Router,
+//     Switch,
+//     Route,
+//     Link,
+//     useParams
+// } from "react-router-dom";
 
 // const LinkShow = ({match}) => {
 //      console.log(match.params.id)
 // }
 export default class ResourceDetailes extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+    // constructor(props) {
+    //     super(props);
+    // }
 
     state = {
         query: '',
