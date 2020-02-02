@@ -29,7 +29,10 @@ export default class ResourceDetailes extends React.Component {
         // query_second_end: '.} }  limit 1000',
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
         http_result: [],
-        triples:''
+        triples:'',
+        rdf_graph_data:'',
+        showModal: false,
+        modalTitle: ''
     };
 
 
@@ -160,7 +163,15 @@ export default class ResourceDetailes extends React.Component {
         MakeHttpReq('sparql', q).then((res) =>{
                 // console.log(res.data.results)
             res.data.results.bindings.map((obj) =>  {
+                    if(obj.property.value === 'http://purl.org/dc/elements/1.1/title'){
+                        this.setState({
+                            modalTitle: obj.object.value
+                        })
+                    }
                     if (obj.property.value === 'http://www.w3.org/2004/02/skos/core#prefLabel'){
+                        this.setState({
+                            modalTitle: obj.object.value
+                        })
                         searchVar = obj.object.value;
                         artist_federated ={...artist_federated,
                         input1: searchVar,
@@ -258,7 +269,64 @@ export default class ResourceDetailes extends React.Component {
         //     }
         // );
     };
-    
+
+    showTurtle = () => {
+        const theLink = 'http://localhost:3000'+ this.props.match.url;
+        const query ='query= describe <'+ theLink + '>';
+        MakeHttpReq('query', query, 'application/rdf+xml').then((res) =>{
+                console.log(res)
+
+                this.setState({
+                    rdf_graph_data: res.data,
+                    showModal: true
+                })
+            }
+        );
+
+    };
+
+    showJson = () => {
+        const theLink = 'http://localhost:3000'+ this.props.match.url;
+        const query ='query= describe <'+ theLink + '>';
+        MakeHttpReq('query', query, 'application/ld+json').then((res) =>{
+                console.log(res)
+
+                this.setState({
+                    rdf_graph_data: JSON.stringify(res.data, null, 2),
+                    showModal: true
+                })
+            }
+        );
+
+    };
+
+    closeModal = () =>{
+        this.setState({showModal: false});
+    }
+
+    theModal = () => {
+        return(
+            <div className="modal fade bd-example-modal-lg show" tabIndex="-1" role="dialog" style={{display: 'block'}} hidden={!this.state.showModal}
+                 aria-labelledby="myLargeModalLabel" >
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLongTitle">{this.state.modalTitle}</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.closeModal}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                                <pre >
+                                    <code >{this.state.rdf_graph_data}</code>
+                                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        )
+    }
 
 
     render() {
@@ -267,6 +335,9 @@ export default class ResourceDetailes extends React.Component {
                 <p>
                     <ResultTable2 http_result={this.state.http_result} triples={this.state.triples}/>
                 </p>
+                <button className={"btn btn-info"} onClick={this.showTurtle}>RDF-XML</button>
+                {this.theModal()}
+                <button className={"btn btn-info"} onClick={this.showJson}>JSON-LD</button>
             </div>
         )
     }

@@ -323,7 +323,7 @@ class App extends Component {
                     </Link>
                     <button className={'btn btn-danger '} onClick={this.postQuery} style={{width:'100px'}}>Post Query</button>
                     <button className={'btn btn-warning '} onClick={this.clearQuery} style={{width:'100px'}}>Clear Query</button>
-                    <button className={'btn btn-info '} onClick={this.showGraph} style={{width:'100px'}}>Show Graph</button>
+                    <button className={'btn btn-info '} onClick={this.showGraph} style={{width:'100px'}} >Show Graph</button>
                 {/*</div>*/}
                 <textarea value={this.state.query} className={"form-control"} rows={"3"} disabled={'disabled'}/>
 

@@ -94,3 +94,7 @@ marker {
 svg{
   border:1px solid black;
 }
+
+.modal{
+  text-align: left;
+}
