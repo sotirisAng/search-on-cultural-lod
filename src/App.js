@@ -17,7 +17,7 @@ class App extends Component {
     state = {
         query: '',
         query_start: 'SELECT distinct * WHERE{ ',
-        query_end: ' } limit 1000',
+        query_end: ' } limit 250',
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
         // artist: '?cho dc:creator ?artist. ?artist skos:prefLabel ?name. ',
         // artist_filter: {
@@ -224,9 +224,9 @@ class App extends Component {
                                        custom_filter={{
                                            start: ' FILTER(',
                                            subject: '',
-                                           between: '>= ',
+                                           between: '>= "',
                                            value: '',
-                                           end: ') '
+                                           end: '") '
                                        }}
                                        passvalueType={'text'}
                                        passSubject={this.passSubject}
@@ -333,8 +333,8 @@ class App extends Component {
                     </React.Fragment>
                 )}/>
                 {/*<Switch>*/}
-                    <Route path="/:museum/:type/:id(\d+)" exact component={ResourceDetails} />
-                    <Route path="/:museum/:id(\d+)/:type" exact component={ResourceDetails} />
+                    <Route path="/:museum/artist/:id" exact component={ResourceDetails} />
+                    <Route path="/:museum/:id/artwork" exact component={ResourceDetails} />
                     <Route path="/:museum/:id" exact component={ResourceDetails} />
                     {/*<Route path="/:museum/:type/:id" exact render={(props) => <ResourceDetails {...props}/>} />*/}
                 {/*</Switch>*/}

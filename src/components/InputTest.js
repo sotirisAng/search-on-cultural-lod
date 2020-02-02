@@ -154,7 +154,8 @@ export class InputTest extends React.Component{
         this.setState({
             plusbtn_clicked:  true,
             clear: false,
-            couldClear:true
+            couldClear:true,
+            suggestions: []
         })
         // this.props.builtQuery(this.state.input_text);
         // this.setState({input_text: ''})
@@ -174,7 +175,7 @@ export class InputTest extends React.Component{
         return(
             <form onSubmit={this.onSubmit} className={'form-group'}  >
 				<div className="dropdown">
-                    <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder={this.props.placeholder} value={this.state.input_text} onChange={this.onChange}  />
+                    <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder={this.props.placeholder} value={this.state.input_text} onChange={this.onChange} disabled={this.state.plusbtn_clicked} />
                     <input type='submit' value={this.state.plusbtn_clicked ?  '✔' : '+' } className={this.state.plusbtn_clicked ?  'btn btn-success ' : 'btn btn-danger'} disabled={this.state.plusbtn_clicked}/>
                     {this.showSuggestions()}
                 </div>

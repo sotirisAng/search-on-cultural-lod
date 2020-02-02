@@ -268,6 +268,8 @@ class ResultTable2 extends React.Component {
                 return 'rdf:type';
             case 'http://www.europeana.eu/schemas/edm/end':
                 return 'edm:end';
+            case 'http://www.europeana.eu/schemas/edm/begin':
+                return 'edm:begin';
             case 'http://www.w3.org/2004/02/skos/core#note':
                 return 'skos:note';
             case 'http://www.w3.org/2004/02/skos/core#prefLabel':
