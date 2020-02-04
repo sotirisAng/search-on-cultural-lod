@@ -111,7 +111,7 @@ class App extends Component {
         // });
         this.state.subjects.push(triple);
         this.state.clear_inputs = false;
-        console.log(this.state.subjects);
+        // console.log(this.state.subjects);
 
     };
 

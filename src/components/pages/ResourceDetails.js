@@ -180,7 +180,7 @@ export default class ResourceDetailes extends React.Component {
 
                         // console.log(artist_federated);
                         q = this.state.prefixes + this.state.query_start  +federated_string + '}';
-                        console.log(q);
+                        // console.log(q);
                         MakeHttpReq('sparql', q).then((res) =>{
                              console.log(res.data.results.bindings)
                             res.data.results.bindings.map((obj)=>{
@@ -308,7 +308,7 @@ export default class ResourceDetailes extends React.Component {
         return(
             <div className="modal fade bd-example-modal-lg show" tabIndex="-1" role="dialog" style={{display: 'block'}} hidden={!this.state.showModal}
                  aria-labelledby="myLargeModalLabel" >
-                <div className="modal-dialog modal-lg">
+                <div className="modal-dialog modal-lg modal-dialog-scrollable ">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="exampleModalLongTitle">{this.state.modalTitle}</h5>

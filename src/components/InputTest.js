@@ -21,7 +21,7 @@ export class InputTest extends React.Component{
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
         query_start: 'SELECT distinct * WHERE{ ',
         query_triple: this.props.triple,
-        query_end: ' } group by ' + this.props.subject,
+        query_end: ' } group by ' + this.props.subject +' limit 50' ,
         filter : {
             start: ' FILTER regex(',
             subject: this.props.subject,
@@ -41,8 +41,8 @@ export class InputTest extends React.Component{
     componentDidUpdate(prevProps, prevState){
         if(this.props.clear !== undefined){
 
-            console.log('btn '+this.state.plusbtn_clicked);
-            console.log('props.clear '+this.props.clear);
+            // console.log('btn '+this.state.plusbtn_clicked);
+            // console.log('props.clear '+this.props.clear);
             if(this.state.couldClear){
                 this.state.clear = this.props.clear;
                 // this.state.input_text= '';
@@ -55,7 +55,7 @@ export class InputTest extends React.Component{
                 }
             }
 
-            console.log('state.clear '+this.state.clear);
+            // console.log('state.clear '+this.state.clear);
         }
 
 

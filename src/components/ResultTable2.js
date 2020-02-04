@@ -176,90 +176,95 @@ class ResultTable2 extends React.Component {
         // });
         // results = this.http_results()
         // let c = 1;
-        return(
-            this.props.http_result.map((obj, index) =>{
-                    const objkeys = Object.keys(obj);
-                    const i = index;
-                    console.log(this.props.triples)
-                if(this.props.triples.length > 0 ) {
-                    // console.log(typeof(triples));
-                    // console.log(obj);
-                    this.props.triples.map(triple => {
-                        // console.log(triple)
-                        // if(obj[triple[0]] === undefined || obj[triple[2]] === undefined){
-                        //     return;
-                        // }
-                        // else
-                        if(obj[triple[0]] !== undefined && obj[triple[2]] !== undefined)
-                        triples.push(
-                            {
-                                subject: obj[triple[0]].value,
-                                predicate: triple[1],
-                                object: obj[triple[2]].value
-                            }
-                        )
-                    });
-                    console.log(triples);
-                    this.state.triples = triples;
-                    // this.setState({
-                    //     triples: triples
-                    // });
-                }
-                    let setImg = false;
-                    // console.log(obj[x].value);
-                    // console.log(objkeys);
-                    // console.log("name = "+obj.name.value)
-                // let n ='';
-                //      if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
-                //      if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
-                // let jaro = this.distance(obj.name.value , n)
-                //
-                // console.log('c = ' + c);
-                    return(
-                     <tr key={index}>
-                         {// var v_s = v.toString()
-                             objkeys.map((v,k) =>
-                             {
-                                 // console.log(obj[v].value)
-                                 // console.log(setImg)
-                                 if(k===0 && obj[v].value === 'http://www.europeana.eu/schemas/edm/hasView') {
-                                 setImg = true;
+        if (this.props.http_result.length === 0 && this.props.triples.length !== 0 )
+            return <h3>No results</h3>
+        else {
+            return(
+                this.props.http_result.map((obj, index) =>{
+                        const objkeys = Object.keys(obj);
+                        const i = index;
+                        // console.log(this.props.triples)
+                        if(this.props.triples.length > 0 ) {
+                            // console.log(typeof(triples));
+                            // console.log(obj);
+                            this.props.triples.map(triple => {
+                                // console.log(triple)
+                                // if(obj[triple[0]] === undefined || obj[triple[2]] === undefined){
+                                //     return;
+                                // }
+                                // else
+                                if(obj[triple[0]] !== undefined && obj[triple[2]] !== undefined)
+                                    triples.push(
+                                        {
+                                            subject: obj[triple[0]].value,
+                                            predicate: triple[1],
+                                            object: obj[triple[2]].value
+                                        }
+                                    )
+                            });
+                            // console.log(triples);
+                            this.state.triples = triples;
+                            // this.setState({
+                            //     triples: triples
+                            // });
+                        }
+                        let setImg = false;
+                        // console.log(obj[x].value);
+                        // console.log(objkeys);
+                        // console.log("name = "+obj.name.value)
+                        // let n ='';
+                        //      if (obj.name1) {console.log("name1 = "+obj.name1.value);  n = obj.name1.value;}
+                        //      if (obj.name2) {console.log("name2 = "+obj.name2.value);  n = obj.name2.value;}
+                        // let jaro = this.distance(obj.name.value , n)
+                        //
+                        // console.log('c = ' + c);
+                        return(
+                            <tr key={index}>
+                                {// var v_s = v.toString()
+                                    objkeys.map((v,k) =>
+                                        {
+                                            // console.log(obj[v].value)
+                                            // console.log(setImg)
+                                            if(k===0 && obj[v].value === 'http://www.europeana.eu/schemas/edm/hasView') {
+                                                setImg = true;
 
-                                 }
-                                 // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
-                                 let value;
-                                 // if (obj[v].type === 'uri' && obj[v].value.includes('mple.')) {console.log(obj[v].value)}
-                                 // return (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
-                                 if (obj[v].type !== 'uri')  {
-                                      value = <td style={{maxWidth: 300, overflow:'hidden'}}>{obj[v].value}</td>;
-                                 }
-                                 else
-                                 {  if (obj[v].value.includes('localhost')) { //change search element for new mapping dataset
-                                     let id=obj[v].value.split('3000/')[1];
-                                     value = <td style={{maxWidth: 300, overflow:'hidden'}}><Link to={{
-                                         pathname: '/'+id,
-                                         // path:'/details',
-                                         state: {resourceClicked: obj[v].value,
                                             }
-                                     }} > {obj[v].value} </Link></td>
-                                 }
-                                 else if(k===1 && setImg){
-                                     value = <td><img alt={obj[v].value} src={obj[v].value}/></td>
-                                 }
-                                 else {
-                                     value = <td><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>
-                                 }}
-                                 return value
-                             }
+                                            // console.log('index = ' + index + ' v= ' + v + ' k= '+k);
+                                            let value;
+                                            // if (obj[v].type === 'uri' && obj[v].value.includes('mple.')) {console.log(obj[v].value)}
+                                            // return (v === 'thumbnail') ? <td><a href={obj[v].value}> {obj[v].value} </a></td> : <td>{obj[v].value}</td>}
+                                            if (obj[v].type !== 'uri')  {
+                                                value = <td style={{maxWidth: 300, overflow:'hidden'}}>{obj[v].value}</td>;
+                                            }
+                                            else
+                                            {  if (obj[v].value.includes('localhost')) { //change search element for new mapping dataset
+                                                let id=obj[v].value.split('3000/')[1];
+                                                value = <td style={{maxWidth: 300, overflow:'hidden'}}><Link to={{
+                                                    pathname: '/'+id,
+                                                    // path:'/details',
+                                                    state: {resourceClicked: obj[v].value,
+                                                    }
+                                                }} > {obj[v].value} </Link></td>
+                                            }
+                                            else if(k===1 && setImg){
+                                                value = <td><img alt={obj[v].value} src={obj[v].value}/></td>
+                                            }
+                                            else {
+                                                value = <td><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>
+                                            }}
+                                            return value
+                                        }
 
-                         )}
-                         {/*<td>{obj.name.value}</td>*/}
-                         {/*<td>{obj.cho.value}</td>*/}
-                     </tr>
-                 )
-            }
+                                    )}
+                                {/*<td>{obj.name.value}</td>*/}
+                                {/*<td>{obj.cho.value}</td>*/}
+                            </tr>
+                        )
+                    }
+                )
             )
-        )
+        }
+
     };
 
     showPrefix = (url) =>{
@@ -325,8 +330,9 @@ class ResultTable2 extends React.Component {
         // console.log(this.props.showGraph)
 
         if (this.props.showGraph)
-            {console.log(this.state.triples)
-            console.log('showGraph')
+            {
+                // console.log(this.state.triples)
+            // console.log('showGraph')
             return <Curve2 triples={this.state.triples}/>}
     }
 
