@@ -3,7 +3,7 @@ import React from 'react'
 // import PropTypes from 'prop-types'
 import {MakeHttpReq} from "./MakeHttpReq";
 
-export class InputTest extends React.Component{
+export class Inputs extends React.Component{
 
     constructor(props) {
         super(props);
@@ -18,7 +18,7 @@ export class InputTest extends React.Component{
 
 
         query: '',
-        prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
+        prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> ',
         query_start: 'SELECT distinct * WHERE{ ',
         query_triple: this.props.triple,
         query_end: ' } group by ' + this.props.subject +' limit 50' ,
@@ -185,4 +185,4 @@ export class InputTest extends React.Component{
 
 }
 
-export default InputTest;
+export default Inputs;

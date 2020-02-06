@@ -75,7 +75,8 @@ export class Curve2 extends React.Component{
 				;
 
         // const force = d3.layout.force().size([800, 600]);
-        const force = d3.forceSimulation()
+        const simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
             .force('charge', d3.forceManyBody().strength(-40))
             .force('center', d3.forceCenter(1000 / 2, 600 / 2));
 
@@ -190,7 +191,7 @@ export class Curve2 extends React.Component{
         ;//nodes
 
         // ==================== Force ====================
-        force.on("tick", function() {
+        simulation.on("tick", function() {
             nodes
                 .attr("cx", function(d){ return d.x; })
                 .attr("cy", function(d){ return d.y; })
@@ -216,16 +217,20 @@ export class Curve2 extends React.Component{
             ;
         });
 
-        force.nodes(graph.nodes);
-        // force.force('link').links(graph.links); #####################################
+        simulation.nodes(graph.nodes);
+       //   simulation.links(graph.links); //#####################################
+       // d3.forceLink([links]).links([graph.links])
+        simulation.force("link")
+            .links(graph.links);
 
-            // .links(graph.links)
+
+        // .links(graph.links);
             // .charge(-500)
-            // .linkDistance(50)
+            // force.linkDistance(50)
             // .start()
 
         function dragstarted(d) {
-            if (!d3.event.active) force.alphaTarget(0.1).restart();
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
             d.fy = d.y;
         }
@@ -236,7 +241,7 @@ export class Curve2 extends React.Component{
         }
 
         function dragended(d) {
-            if (!d3.event.active) force.alphaTarget(0);
+            if (!d3.event.active) simulation.alphaTarget(-0.3);
             d.fx = null;
             d.fy = null;
         }

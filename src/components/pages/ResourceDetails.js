@@ -189,7 +189,7 @@ export default class ResourceDetailes extends React.Component {
                                 else if (obj.name2){n = obj.name2.value}
                                 else{
                                     MakeHttpReq('sparql', this.state.query).then((res) =>{
-                                            console.log('tora3')
+                                            // console.log('tora3')
 
                                             this.setState({
                                                 http_result: res.data.results.bindings

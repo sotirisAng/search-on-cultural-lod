@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import axios from 'axios';
 import logo from './LOGO_SEMANTICS_WHITE.png';
-import InputTest from './components/InputTest';
+import Inputs from './components/Inputs';
 import ResultTable2 from './components/ResultTable2';
 import {BrowserRouter as Router, Link, Route} from 'react-router-dom'
 import ResourceDetails from "./components/pages/ResourceDetails";
@@ -208,105 +208,105 @@ class App extends Component {
                     <div className="row">
                         <div className={'card col-md-6'}>
                             <h2>Artist</h2>
-                            <InputTest passValue={this.passValue}
+                            <Inputs passValue={this.passValue}
                                 // passService={this.passService}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?artist skos:prefLabel ?name. "}
-                                       subject={'?name'}
-                                       placeholder={'Name'}
-                                       clear={this.state.clear_inputs}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?artist skos:prefLabel ?name. "}
+                                    subject={'?name'}
+                                    placeholder={'Name'}
+                                    clear={this.state.clear_inputs}
                                        // default_value={this.state.input_value}
                                        // default_btn={this.state.btn}
                             />
                             {/*<h3>Lived Between (Years)</h3>*/}
-                            <InputTest passValue={this.passValue}
-                                       custom_filter={{
+                            <Inputs passValue={this.passValue}
+                                    custom_filter={{
                                            start: ' FILTER(',
                                            subject: '',
                                            between: '>= "',
                                            value: '',
                                            end: '") '
                                        }}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?artist edm:begin ?born. "}
-                                       subject={'?born'}
-                                       placeholder={'Born after year'}
-                                       clear={this.state.clear_inputs}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?artist edm:begin ?born. "}
+                                    subject={'?born'}
+                                    placeholder={'Born after year'}
+                                    clear={this.state.clear_inputs}
                             />
-                            <InputTest passValue={this.passValue}
-                                       custom_filter={{
+                            <Inputs passValue={this.passValue}
+                                    custom_filter={{
                                            start: ' FILTER(',
                                            subject: '',
                                            between: '<= "',
                                            value: '',
                                            end: '") '
                                        }}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?artist edm:end ?died. "}
-                                       subject={'?died'}
-                                       placeholder={'Died before year'}
-                                       clear={this.state.clear_inputs}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?artist edm:end ?died. "}
+                                    subject={'?died'}
+                                    placeholder={'Died before year'}
+                                    clear={this.state.clear_inputs}
                             />
                             {/*<h3>Nationality</h3>*/}
-                            <InputTest passValue={this.passValue}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?artist skos:note ?Nationality. "}
-                                       subject={'?Nationality'}
-                                       placeholder={'Nationality'}
-                                       clear={this.state.clear_inputs}
+                            <Inputs passValue={this.passValue}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?artist skos:note ?Nationality. "}
+                                    subject={'?Nationality'}
+                                    placeholder={'Nationality'}
+                                    clear={this.state.clear_inputs}
                             />
                         </div>
                         <div className={'card col-md-6'}>
                             <h2 className={"card-img-top"}>Artwork</h2>
                             {/*<h3>Title</h3>*/}
-                            <InputTest passValue={this.passValue}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?cho dc:title ?title. ?cho dc:creator ?artist. "}
-                                       subject={'?title'}
-                                       placeholder={'Title'}
-                                       clear={this.state.clear_inputs}
+                            <Inputs passValue={this.passValue}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?cho dc:title ?title. ?cho dc:creator ?artist. "}
+                                    subject={'?title'}
+                                    placeholder={'Title'}
+                                    clear={this.state.clear_inputs}
                             />
                             {/*<h3>Medium</h3>*/}
-                            <InputTest passValue={this.passValue}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?cho dct:medium ?medium. "}
-                                       subject={'?medium'}
-                                       placeholder={'Medium'}
-                                       clear={this.state.clear_inputs}
+                            <Inputs passValue={this.passValue}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?cho dct:medium ?medium. "}
+                                    subject={'?medium'}
+                                    placeholder={'Medium'}
+                                    clear={this.state.clear_inputs}
                             />
                             {/*<h3>Date</h3>*/}
-                            <InputTest passValue={this.passValue}
-                                       custom_filter={{
+                            <Inputs passValue={this.passValue}
+                                    custom_filter={{
                                            start: ' FILTER regex(',
                                            subject: '',
                                            between: ', "',
                                            value: '',
                                            end: '") '
                                        }}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?cho dc:date ?date. "}
-                                       subject={'?date'}
-                                       placeholder={'Date'}
-                                       clear={this.state.clear_inputs}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?cho dc:date ?date. "}
+                                    subject={'?date'}
+                                    placeholder={'Date'}
+                                    clear={this.state.clear_inputs}
                             />
                             {/*<h3>Classification</h3>*/}
-                            <InputTest passValue={this.passValue}
-                                       passvalueType={'text'}
-                                       passSubject={this.passSubject}
-                                       triple={"?cho dc:type ?classification. "}
-                                       subject={'?classification'}
-                                       placeholder={'Classification'}
-                                       clear={this.state.clear_inputs}
+                            <Inputs passValue={this.passValue}
+                                    passvalueType={'text'}
+                                    passSubject={this.passSubject}
+                                    triple={"?cho dc:type ?classification. "}
+                                    subject={'?classification'}
+                                    placeholder={'Classification'}
+                                    clear={this.state.clear_inputs}
                             />
                             {/*<h3>Thumbnail</h3>*/}
-                            {/*<InputTest*/}
+                            {/*<Inputs*/}
                             {/*    passvalueType={'checkbox'}*/}
                             {/*    passSubject={this.passSubject}*/}
                             {/*    triple={"?cho edm:hasView ?thumbnail. "}*/}
