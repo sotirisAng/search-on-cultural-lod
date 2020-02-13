@@ -41,31 +41,17 @@ export class Inputs extends React.Component{
     componentDidUpdate(prevProps, prevState){
         if(this.props.clear !== undefined){
 
-            // console.log('btn '+this.state.plusbtn_clicked);
-            // console.log('props.clear '+this.props.clear);
             if(this.state.couldClear){
                 this.state.clear = this.props.clear;
-                // this.state.input_text= '';
-                // this.setState({
-                //     clear: this.props.clear
-                // })
                 if(this.state.clear){
 
                     this.clearInput()
                 }
             }
-
-            // console.log('state.clear '+this.state.clear);
         }
-
-
     }
 
     clearInput = () => {
-        // this.setState({
-        //     plusbtn_clicked: false,
-        //     input_text: ''
-        // })
         this.state.clear = false;
         this.state.plusbtn_clicked= false;
         this.state.input_text= '';
@@ -86,30 +72,12 @@ export class Inputs extends React.Component{
         let res = await MakeHttpReq('sparql', query);
         const sub = res.data.head.vars[0];
         let list = [];
-        res.data.results.bindings.map((obj,index) => {
+        res.data.results.bindings.map((obj) => {
             list.push(obj[sub].value)
         });
-        // console.log(list);
         this.setState({
             suggestions: list
         })
-    };
-
-    showList = () => {
-        console.log('focus1');
-
-        // return(
-        //     // <ul className="list-group" style={{ 'position': 'relative', 'width': '300px', 'max-height': '200px', 'overflow-y': 'auto', 'z-index': 2 }}>
-        //     <div className="form-group" style={{position: 'relative', width: 300, maxHeight: 200, overflowY: 'auto' , zIndex:100}}>
-        //         <select multiple className="form-control" id="exampleFormControlSelect2">
-        //             <option>1</option>
-        //             <option>2</option>
-        //             <option>3</option>
-        //             <option>4</option>
-        //             <option>5</option>
-        //         </select>
-        //     </div>
-        // )
     };
 
     showSuggestions = () =>{
@@ -126,19 +94,8 @@ export class Inputs extends React.Component{
     };
 
     selectSuggestion = (obj) => {
-        // prevent.default
         this.setState({ input_text: obj, suggestions: []});
-        // console.log(obj);
     };
-
-    // handleInputFocus = () => {
-    //     this.setState({ focus: true});
-    // };
-    //
-    // handleInputBlur = () => {
-    //     this.setState({ focus: false });
-    // };
-
 
     onSubmit = (e) => {
         e.preventDefault();
@@ -157,9 +114,6 @@ export class Inputs extends React.Component{
             couldClear:true,
             suggestions: []
         })
-        // this.props.builtQuery(this.state.input_text);
-        // this.setState({input_text: ''})
-
     };
 
 

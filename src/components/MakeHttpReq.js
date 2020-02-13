@@ -1,4 +1,3 @@
-// import React from 'react';
 import axios from 'axios';
 
 export function MakeHttpReq(urlEnding,query,accept ) {

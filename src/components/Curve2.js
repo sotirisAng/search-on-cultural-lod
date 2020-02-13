@@ -3,71 +3,6 @@ import * as d3 from 'd3';
 
 export class Curve2 extends React.Component{
 
-    // state={
-    //     triples : [
-    //         {
-    //             "subject": "http://www.moma.org/collection/works/9876",
-    //             "predicate": "dc:creator",
-    //             "object": "http://momaexmple.org/artworks/9876/artist/"
-    //         },
-    //         {
-    //             "subject": "http://momaexmple.org/artworks/9876/artist/",
-    //             "predicate": "skos:prefLabel",
-    //             "object": "Pablo Picasso"
-    //         },
-    //         {
-    //             "subject": "http://www.moma.org/collection/works/9876",
-    //             "predicate": "dct:medium",
-    //             "object": "Ink on paper"
-    //         },
-    //         {
-    //             "subject": "http://www.moma.org/collection/works/9876",
-    //             "predicate": "dc:type",
-    //             "object": "Drawing"
-    //         },
-    //         {
-    //             "subject": "https://api.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&type=IMAGE&uri=http%3A%2F%2Fwww.szepmuveszeti.hu%2Fdata%2Fmutargykepek%2F1%2F4378%2F14378.jpg",
-    //             "predicate": "dc:creator",
-    //             "object": "http://cmoaexample.com/cmoa/things/c20f15d2-18f0-4f62-866a-ac383809ce97/provider/"
-    //         },
-    //         {
-    //             "subject": "http://cmoaexample.com/cmoa/things/c20f15d2-18f0-4f62-866a-ac383809ce97/provider/",
-    //             "predicate": "skos:prefLabel",
-    //             "object": "Alan G. and Jane A. Lehman Fund, Robert S. Waters Charitable Trust Fund, and Charles J. Rosenbloom Fund"
-    //         },
-    //         {
-    //             "subject": "https://api.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&type=IMAGE&uri=http%3A%2F%2Fwww.szepmuveszeti.hu%2Fdata%2Fmutargykepek%2F1%2F4378%2F14378.jpg",
-    //             "predicate": "dct:medium",
-    //             "object": "Ink on paper"
-    //         },
-    //         {
-    //             "subject": "https://api.europeana.eu/api/v2/thumbnail-by-url.json?size=w400&type=IMAGE&uri=http%3A%2F%2Fwww.szepmuveszeti.hu%2Fdata%2Fmutargykepek%2F1%2F4378%2F14378.jpg",
-    //             "predicate": "dc:type",
-    //             "object": "Drawings"
-    //         },
-    //         {
-    //             "subject": "http://www.moma.org/collection/works/9876",
-    //             "predicate": "dc:creator",
-    //             "object": "http://dbpedia.org/resource/Pablo_Picasso"
-    //         },
-    //         {
-    //             "subject": "http://dbpedia.org/resource/Pablo_Picasso",
-    //             "predicate": "skos:prefLabel",
-    //             "object": "Pablo Picasso"
-    //         },
-    //         {
-    //             "subject": "http://www.moma.org/collection/works/9876",
-    //             "predicate": "dct:medium",
-    //             "object": "Ink on paper"
-    //         },
-    //         {
-    //             "subject": "http://www.moma.org/collection/works/9876",
-    //             "predicate": "dc:type",
-    //             "object": "Drawing"
-    //         }
-    //     ]
-    // }
-
     componentDidMount() {
         const svg = d3.select("#svg-body").append("svg")
 				.attr("width", 1000)
@@ -126,7 +61,7 @@ export class Curve2 extends React.Component{
             });
 
             return graph;
-        }
+        };
 
         const graph = this.triplesToGraph(this.props.triples);
 
@@ -188,7 +123,7 @@ export class Curve2 extends React.Component{
                 .on("drag", dragged)
                 .on("end", dragended));
             // .call(force.drag) #######################################
-        ;//nodes
+        //nodes
 
         // ==================== Force ====================
         simulation.on("tick", function() {
@@ -218,16 +153,9 @@ export class Curve2 extends React.Component{
         });
 
         simulation.nodes(graph.nodes);
-       //   simulation.links(graph.links); //#####################################
-       // d3.forceLink([links]).links([graph.links])
         simulation.force("link")
             .links(graph.links);
 
-
-        // .links(graph.links);
-            // .charge(-500)
-            // force.linkDistance(50)
-            // .start()
 
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();

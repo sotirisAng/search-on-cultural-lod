@@ -1,22 +1,8 @@
 import React from 'react';
-// import axios from 'axios';
 import ResultTable2 from "../ResultTable2";
 import {MakeHttpReq} from "../MakeHttpReq";
-// import {
-//     BrowserRouter as Router,
-//     Switch,
-//     Route,
-//     Link,
-//     useParams
-// } from "react-router-dom";
 
-// const LinkShow = ({match}) => {
-//      console.log(match.params.id)
-// }
 export default class ResourceDetailes extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    // }
 
     state = {
         query: '',
@@ -37,7 +23,7 @@ export default class ResourceDetailes extends React.Component {
 
 
 
-    distance = (s1, s2, caseSensitive= true ) => {
+    distance = (s1, s2 ) => {
         var m = 0;
         var i;
         var j;
@@ -136,14 +122,8 @@ export default class ResourceDetailes extends React.Component {
 
 
 
-    // componentWillMount() {
     componentDidMount() {
-        console.log('match');
-        console.log(this.props.match);
         const theLink = 'http://localhost:3000'+ this.props.match.url;
-        // let {id} = useParams();
-        // console.log(id);
-        // LinkShow();
         let q = this.state.prefixes + this.state.query_start  +'<'+ theLink +'>' + this.state.query_first_end;
         // let q = this.state.prefixes + this.state.query_start  +'<'+ this.props.location.state.resourceClicked +'>' + this.state.query_first_end;
 
@@ -158,10 +138,8 @@ export default class ResourceDetailes extends React.Component {
         } ;
         this.setState({
         query: q
-        // query: this.state.prefixes + this.state.query_start  +'<'+ this.props.location.state.resourceClicked +'>' + this.state.query_first_end + this.state.query_second + '<'+ this.props.location.state.resourceClicked +'>' + this.state.query_second_end
     });
         MakeHttpReq('sparql', q).then((res) =>{
-                // console.log(res.data.results)
             res.data.results.bindings.map((obj) =>  {
                     if(obj.property.value === 'http://purl.org/dc/elements/1.1/title'){
                         this.setState({
@@ -171,25 +149,22 @@ export default class ResourceDetailes extends React.Component {
                     if (obj.property.value === 'http://www.w3.org/2004/02/skos/core#prefLabel'){
                         this.setState({
                             modalTitle: obj.object.value
-                        })
+                        });
                         searchVar = obj.object.value;
                         artist_federated ={...artist_federated,
                         input1: searchVar,
                         input2: searchVar};
                         let federated_string = Object.values(artist_federated).join('');
 
-                        // console.log(artist_federated);
                         q = this.state.prefixes + this.state.query_start  +federated_string + '}';
-                        // console.log(q);
+
                         MakeHttpReq('sparql', q).then((res) =>{
-                             console.log(res.data.results.bindings)
                             res.data.results.bindings.map((obj)=>{
                                 let n = '';
                                 if (obj.name1){n = obj.name1.value}
                                 else if (obj.name2){n = obj.name2.value}
                                 else{
                                     MakeHttpReq('sparql', this.state.query).then((res) =>{
-                                            // console.log('tora3')
 
                                             this.setState({
                                                 http_result: res.data.results.bindings
@@ -199,16 +174,10 @@ export default class ResourceDetailes extends React.Component {
                                 }
 
                                 let jaro = this.distance(searchVar , n);
-                                console.log(" jaro = "+jaro );
                                 if (jaro > 0.95) {
-                                    // if (jaro > 0.95 && ((1/lev) < 0.1)) {
-                                    console.log('yes');
-                                    // console.log(obj.artist.value);
                                     if (obj.ExternalLink) {
                                         console.log(obj.ExternalLink.value);
-                                        // this.createSameAsRelation(this.props.location.state.resourceClicked, obj.ExternalLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
                                         this.createSameAsRelation(theLink, obj.ExternalLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
-                                            console.log('tora')
                                                 this.setState({
                                                     http_result: res.data.results.bindings
                                                 })
@@ -216,9 +185,7 @@ export default class ResourceDetailes extends React.Component {
                                         );});
                                     } else if (obj.SameAslLink) {
                                         console.log(obj.SameAslLink.value);
-                                        // this.createSameAsRelation(this.props.location.state.resourceClicked, obj.SameAslLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
                                         this.createSameAsRelation(theLink, obj.SameAslLink.value).then(() => {MakeHttpReq('sparql', this.state.query).then((res) =>{
-                                            console.log('tora2')
 
                                             this.setState({
                                                     http_result: res.data.results.bindings
@@ -229,8 +196,6 @@ export default class ResourceDetailes extends React.Component {
                                 }
                                 else{
                                     MakeHttpReq('sparql', this.state.query).then((res) =>{
-                                            console.log('tora3')
-
                                             this.setState({
                                                 http_result: res.data.results.bindings
                                             })
@@ -239,15 +204,10 @@ export default class ResourceDetailes extends React.Component {
                                 }
 
                             });
-                            // let lev = this.LevenshteinDistance(nam, n);
-
-
                         })
                     }
                     else{
                         MakeHttpReq('sparql', this.state.query).then((res) =>{
-                                console.log('tora3')
-
                                 this.setState({
                                     http_result: res.data.results.bindings
                                 })
@@ -257,25 +217,12 @@ export default class ResourceDetailes extends React.Component {
             })
             }
         );
-    // }
-
-    // componentDidMount() {
-        // const { resourceClicked } = this.props.location.state;
-
-        // MakeHttpReq('sparql', this.state.query).then((res) =>{
-        //         this.setState({
-        //             http_result: res.data.results.bindings
-        //         })
-        //     }
-        // );
     };
 
     showTurtle = () => {
         const theLink = 'http://localhost:3000'+ this.props.match.url;
         const query ='query= describe <'+ theLink + '>';
         MakeHttpReq('query', query, 'application/rdf+xml').then((res) =>{
-                console.log(res)
-
                 this.setState({
                     rdf_graph_data: res.data,
                     showModal: true
@@ -289,8 +236,6 @@ export default class ResourceDetailes extends React.Component {
         const theLink = 'http://localhost:3000'+ this.props.match.url;
         const query ='query= describe <'+ theLink + '>';
         MakeHttpReq('query', query, 'application/ld+json').then((res) =>{
-                console.log(res)
-
                 this.setState({
                     rdf_graph_data: JSON.stringify(res.data, null, 2),
                     showModal: true
@@ -302,7 +247,7 @@ export default class ResourceDetailes extends React.Component {
 
     closeModal = () =>{
         this.setState({showModal: false});
-    }
+    };
 
     theModal = () => {
         return(
@@ -326,7 +271,7 @@ export default class ResourceDetailes extends React.Component {
             </div>
 
         )
-    }
+    };
 
 
     render() {
@@ -344,4 +289,3 @@ export default class ResourceDetailes extends React.Component {
 
 
 }
-// export default Details1;
