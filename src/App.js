@@ -18,7 +18,7 @@ class App extends Component {
         query: '',
         query_start: 'SELECT distinct * WHERE{ ',
         query_end: ' } limit 250',
-        prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> prefix foaf: <http://xmlns.com/foaf/0.1/>',
+        prefixes: 'query= PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> ',
         // artist: '?cho dc:creator ?artist. ?artist skos:prefLabel ?name. ',
         // artist_filter: {
         //     start: 'FILTER regex(?name, "',
@@ -40,7 +40,8 @@ class App extends Component {
         showGraph: false,
         clear_inputs: false,
         btn:false,
-        input_value:''
+        input_value:'',
+        posted: false
     };
 
     filter = {
@@ -64,7 +65,8 @@ class App extends Component {
 
     passValue = (input_text, sub, custom_filter) => {
         // console.log(custom_filter);
-        if (input_text !== '')
+        // console.log(input_text);
+        if (input_text !== '' &&  input_text !== undefined)
        {
            const filter = (custom_filter !== undefined ) ?
                ( {
@@ -175,7 +177,8 @@ class App extends Component {
         })
         MakeHttpReq('sparql', this.state.query).then((res) =>{
             this.setState({
-                http_result: res.data.results.bindings
+                http_result: res.data.results.bindings,
+                posted: true
             })
         }
         );
@@ -325,11 +328,11 @@ class App extends Component {
                     <button className={'btn btn-warning '} onClick={this.clearQuery} style={{width:'100px'}}>Clear Query</button>
                     <button className={'btn btn-info '} onClick={this.showGraph} style={{width:'100px'}} >Show Graph</button>
                 {/*</div>*/}
-                <textarea value={this.state.query} className={"form-control"} rows={"3"} disabled={'disabled'}/>
+                <textarea value={this.state.query.slice(7, -9)} className={"form-control"} rows={"3"} disabled={'disabled'}/>
 
                 <Route exact path="/" render={props => (
                     <React.Fragment>
-                        <ResultTable2 http_result={this.state.http_result} triples={this.state.triples} showGraph={this.state.showGraph}/>
+                        <ResultTable2 http_result={this.state.http_result} triples={this.state.triples} showGraph={this.state.showGraph} posted={this.state.posted}/>
                     </React.Fragment>
                 )}/>
                 {/*<Switch>*/}

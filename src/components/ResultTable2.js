@@ -176,7 +176,7 @@ class ResultTable2 extends React.Component {
         // });
         // results = this.http_results()
         // let c = 1;
-        if (this.props.http_result.length === 0 && this.props.triples.length !== 0 )
+        if (this.props.http_result.length === 0 && this.props.triples.length !== 0 && this.props.posted==true)
             return <h3>No results</h3>
         else {
             return(
