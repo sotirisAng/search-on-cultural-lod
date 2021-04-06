@@ -12,9 +12,14 @@ import {MakeHttpReq} from "./components/MakeHttpReq";
 class App extends Component {
     state = {
         query: '',
-        query_start: 'SELECT distinct * WHERE{ ',
-        query_end: ' } limit 250',
-        prefixes: 'query= PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> ',
+        query_start: 'SELECT distinct * WHERE { ',
+        query_end: '} limit 250',
+        prefixes: `query= 
+                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+                    PREFIX edm: <http://www.europeana.eu/schemas/edm/> 
+                    PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+                    PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
+                    PREFIX dct: <http://purl.org/dc/terms/> `,
         subjects:[],
         filters: [],
         filter : {
@@ -28,6 +33,7 @@ class App extends Component {
         http_result: [],
         triples: '',
         showGraph: false,
+        showQuery: false,
         clear_inputs: false,
         btn:false,
         input_value:'',
@@ -79,14 +85,12 @@ class App extends Component {
         this.state.subjects.map((subject)=>
             subjects_string += subject
         );
-        console.log(subjects_string);
         this.state.filters.map((filter)=>
            filters_string += Object.values(filter).join('')
         );
         this.state.external_services.map((service)=>
            services_string += Object.values(service).join('')
         );
-        console.log(filters_string);
         let tr = [];
 
         let temp = subjects_string.replace(/\?/g,'').split('. ').map(triple => {
@@ -94,7 +98,12 @@ class App extends Component {
         });
         tr.pop();
         this.setState({
-        query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + services_string + this.state.query_end,
+        // query: this.state.prefixes + this.state.query_start  + subjects_string + filters_string + services_string + this.state.query_end,
+            query: `${this.state.prefixes}
+                    ${this.state.query_start}
+                    ${subjects_string}
+                    ${filters_string}
+                    ${services_string} ${this.state.query_end}`,
             subjects:[],
             filters: [],
             external_services: [],
@@ -138,7 +147,19 @@ class App extends Component {
 
     showGraph = () => {
         this.setState({
-            showGraph: !this.state.showGraph
+            showGraph: true
+        })
+    };
+
+    showQuery = () => {
+        this.setState({
+            showQuery: !this.state.showQuery
+        })
+    };
+
+    closeGraph = () => {
+        this.setState({
+            showGraph: false
         })
     };
 
@@ -259,11 +280,16 @@ class App extends Component {
                     <button className={'btn btn-danger '} onClick={this.postQuery} style={{width:'100px'}}>Post Query</button>
                     <button className={'btn btn-warning '} onClick={this.clearQuery} style={{width:'100px'}}>Clear Query</button>
                     <button className={'btn btn-info '} onClick={this.showGraph} style={{width:'100px'}} >Show Graph</button>
-                <textarea value={this.state.query.slice(7, -9)} className={"form-control"} rows={"3"} disabled={'disabled'}/>
+                    <button className={'btn btn-primary'} onClick={this.showQuery} style={{width:'100px'}} >Show Query</button>
+                <textarea value={this.state.query.slice(7, -9)} className={"form-control " + (this.state.showQuery ? '' : 'd-none' )} rows={"12"} disabled={'disabled'} />
 
                 <Route exact path="/" render={props => (
                     <React.Fragment>
-                        <ResultTable2 http_result={this.state.http_result} triples={this.state.triples} showGraph={this.state.showGraph} posted={this.state.posted}/>
+                        <ResultTable2 http_result={this.state.http_result}
+                                      triples={this.state.triples}
+                                      showGraph={this.state.showGraph}
+                                      posted={this.state.posted}
+                                      onCloseGraph={this.closeGraph}/>
                     </React.Fragment>
                 )}/>
                     <Route path="/:museum/artist/:id" exact component={ResourceDetails} />
