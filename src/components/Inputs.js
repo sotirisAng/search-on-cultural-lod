@@ -21,13 +21,15 @@ export class Inputs extends React.Component{
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> ',
         query_start: 'SELECT distinct * WHERE{ ',
         query_triple: this.props.triple,
-        query_end: ' } group by ' + this.props.subject +' limit 50' ,
+        query_end: ' } group by ' + this.props.subject +' limit 500' ,
         filter : {
             start: ' FILTER regex(',
             subject: this.props.subject,
             between: ', "',
             value: this.input_text,
-            end: '", "i") '
+            end: '", "i") ',
+            exclude_various:`FILTER regex(${this.props.subject},  "^(?!.*,.*)(?!.*\\\\|.*)") ` //^(?!Various Artists)|^(?!.*,.*)
+
         },
         plusbtn_value: '+',
         plusbtn_clicked: this.props.btn,
@@ -70,10 +72,15 @@ export class Inputs extends React.Component{
         this.state.clear = false;
         let query = this.state.prefixes + this.state.query_start + this.state.query_triple + Object.values(filter).join('') + this.state.query_end;
         let res = await MakeHttpReq('sparql', query);
-        const sub = res.data.head.vars[0];
+        const sub = res && res.data.head.vars[0];
         let list = [];
-        res.data.results.bindings.map((obj) => {
-            list.push(obj[sub].value)
+        res && res.data.results.bindings.map((obj) => {
+
+            // if (obj[sub].value.match(/^(?!.*\|.*)$/)) {
+            //     console.log(obj[sub].value.match(/^(?!.*\|.*)$/))
+                list.push(obj[sub].value)
+            // }
+
         });
         this.setState({
             suggestions: list
@@ -129,7 +136,7 @@ export class Inputs extends React.Component{
         return(
             <form onSubmit={this.onSubmit} className={'form-group'}  >
 				<div className="dropdown">
-                    <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder={this.props.placeholder} value={this.state.input_text} onChange={this.onChange} disabled={this.state.plusbtn_clicked} />
+                    <input className='dropdown-toggle' type={this.props.passvalueType} name="title" placeholder={this.props.placeholder} value={this.state.input_text || ''} onChange={this.onChange} disabled={this.state.plusbtn_clicked} />
                     <input type='submit' value={this.state.plusbtn_clicked ?  '✔' : '+' } className={this.state.plusbtn_clicked ?  'btn btn-success ' : 'btn btn-danger'} disabled={this.state.plusbtn_clicked}/>
                     {this.showSuggestions()}
                 </div>

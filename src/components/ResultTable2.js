@@ -2,20 +2,32 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import {Curve2} from "./Curve2";
 
+const PAGE_SIZE = 10
 
 class ResultTable2 extends React.Component {
 
-    state = {
-        triples: []
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            triples: [],
+            total_pages: 1,
+            current_page: 1,
+            offset: 0,
+            first_page: true,
+            last_page: false
+        };
+
+    }
+
 
     displayRows = () => {
             let triples=[];
         if (this.props.http_result.length === 0 && this.props.triples.length !== 0 && this.props.posted===true)
             return <h3>No results</h3>;
         else {
-            return(
-                this.props.http_result.map((obj, index) =>{
+            let results_to_show = this.props.http_result < PAGE_SIZE ? this.props.http_result : this.props.http_result.slice(this.state.offset, this.state.offset + PAGE_SIZE)
+                return(
+                    results_to_show.map((obj, index) =>{
                         const objkeys = Object.keys(obj);
                         if(this.props.triples.length > 0 ) {
                             this.props.triples.map(triple => {
@@ -27,7 +39,11 @@ class ResultTable2 extends React.Component {
                                             object: obj[triple[2]].value
                                         }
                                     )
+                                return triples
                             });
+                            // this.setState({
+                            //     triples: triples
+                            // })
                             this.state.triples = triples;
                         }
                         let setImg = false;
@@ -42,22 +58,22 @@ class ResultTable2 extends React.Component {
                                             }
                                             let value;
                                             if (obj[v].type !== 'uri')  {
-                                                value = <td style={{maxWidth: 300, overflow:'hidden'}}>{obj[v].value}</td>;
+                                                value = <td key={index+ k} style={{maxWidth: 300, overflow:'hidden'}}>{obj[v].value}</td>;
                                             }
                                             else
-                                            {  if (obj[v].value.includes('localhost')) { //change search element for new mapping dataset
-                                                let id=obj[v].value.split('3000/')[1];
-                                                value = <td style={{maxWidth: 300, overflow:'hidden'}}><Link to={{
+                                            {  if (obj[v].value.includes('http://ct-linkdata.aegean.gr/museum_data')) { //change search element for new mapping dataset
+                                                let id=obj[v].value.split('museum_data/')[1];
+                                                value = <td key={index+ k} style={{maxWidth: 300, overflow:'hidden'}}><Link to={{
                                                     pathname: '/'+id,
                                                     state: {resourceClicked: obj[v].value,
                                                     }
                                                 }} > {obj[v].value} </Link></td>
                                             }
                                             else if(k===1 && setImg){
-                                                value = <td><img alt={obj[v].value} src={obj[v].value}/></td>
+                                                value = <td key={index+ k}><img alt={obj[v].value} src={obj[v].value}/></td>
                                             }
                                             else {
-                                                value = <td><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>
+                                                value = <td key={index+ k}><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>
                                             }}
                                             return value
                                         }
@@ -71,6 +87,25 @@ class ResultTable2 extends React.Component {
         }
 
     };
+
+
+    nextPage = () => {
+        this.setState({
+            current_page: this.state.current_page + 1,
+            offset: this.state.offset + PAGE_SIZE,
+            last_page: (this.state.current_page + 1) === Math.ceil(this.props.http_result.length / PAGE_SIZE),
+            first_page: (this.state.current_page + 1) === 1
+        })
+    }
+
+    previousPage = () => {
+        this.setState({
+            current_page: this.state.current_page - 1,
+            offset: this.state.offset - PAGE_SIZE,
+            first_page: (this.state.current_page - 1) === 1,
+            last_page: (this.state.current_page - 1) === Math.ceil(this.props.http_result.length / PAGE_SIZE),
+        })
+    }
 
     showPrefix = (url) =>{
         switch(url) {
@@ -128,15 +163,39 @@ class ResultTable2 extends React.Component {
         }
     };
 
-    displayGraph(){
-        if (this.props.showGraph)
-            {
-            return <Curve2 triples={this.state.triples}/>}
+    displayGraph = () => {
+        if (this.props.showGraph) {
+            return (
+                <div className="modal fade bd-example-modal-lg show" tabIndex="-1" role="dialog"
+                     style={{display: 'block'}}
+                     hidden={!this.props.showGraph}
+                     aria-labelledby="myLargeModalLabel">
+                    <div className="modal-dialog modal-xl modal-dialog-scrollable ">
+                        <div className="modal-content mx-auto">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLongTitle">Results as Directed Graph</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close"
+                                        onClick={this.props.onCloseGraph}>
+                                    <h1 aria-hidden="true">&times;</h1>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <Curve2 triples={this.state.triples} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            )
+        }
+
+        // if (this.props.showGraph)
+        //     {
+        //     return <Curve2 triples={this.state.triples}/>}
     }
 
 
     render() {
-
         return(
             <div>
                 { this.displayGraph()}
@@ -149,7 +208,25 @@ class ResultTable2 extends React.Component {
                     <tbody>
                     {this.displayRows()}
                     </tbody>
-
+                    <tfoot hidden={Math.ceil(this.props.http_result.length / PAGE_SIZE) < 2}>
+                    <tr>
+                        <td className={'col-4'}>
+                            <button className={'btn btn-secondary btn-lg btn-block'} onClick={this.previousPage}
+                                    disabled={this.state.first_page}>
+                                Previous
+                            </button>
+                        </td>
+                        <td className={'col-4'}>
+                            Page {this.state.current_page} of {Math.ceil(this.props.http_result.length / PAGE_SIZE)}
+                        </td>
+                        <td className={'col-4'}>
+                            <button className={'btn btn-secondary btn-lg btn-block'} onClick={this.nextPage}
+                                    disabled={this.state.last_page}>
+                                Next
+                            </button>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
         )
