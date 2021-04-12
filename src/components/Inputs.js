@@ -21,7 +21,7 @@ export class Inputs extends React.Component{
         prefixes: 'query= prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX edm: <http://www.europeana.eu/schemas/edm/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dct: <http://purl.org/dc/terms/> Prefix dbo: <http://dbpedia.org/ontology/> ',
         query_start: 'SELECT distinct * WHERE{ ',
         query_triple: this.props.triple,
-        query_end: ' } group by ' + this.props.subject +' limit 500' ,
+        query_end: ' } group by ' + this.props.subject +' limit 50' ,
         filter : {
             start: ' FILTER regex(',
             subject: this.props.subject,
@@ -71,20 +71,20 @@ export class Inputs extends React.Component{
         });
         this.state.clear = false;
         let query = this.state.prefixes + this.state.query_start + this.state.query_triple + Object.values(filter).join('') + this.state.query_end;
-        let res = await MakeHttpReq('sparql', query);
-        const sub = res && res.data.head.vars[0];
-        let list = [];
-        res && res.data.results.bindings.map((obj) => {
+        if (e.target.value.length > 4){
+            let res = await MakeHttpReq('sparql', query);
+            const sub = res && res.data.head.vars[0];
+            let list = [];
+            res && res.data.results.bindings.map((obj) => {
 
-            // if (obj[sub].value.match(/^(?!.*\|.*)$/)) {
-            //     console.log(obj[sub].value.match(/^(?!.*\|.*)$/))
                 list.push(obj[sub].value)
-            // }
 
-        });
-        this.setState({
-            suggestions: list
-        })
+            });
+            this.setState({
+                suggestions: list
+            })
+        }
+
     };
 
     showSuggestions = () =>{

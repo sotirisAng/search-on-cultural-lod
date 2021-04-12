@@ -171,7 +171,7 @@ class App extends Component {
         <Router>
             <div className="App">
                 <div className="App-header">
-                    <Link to={{pathname:'/'}} >
+                    <Link to={{pathname:'/museum_data'}} >
                     <img src={logo} className="App-logo" alt="logo" />
                     </Link>
                     <h2>Search of Semantically Integrated Museum Data </h2>
@@ -292,9 +292,9 @@ class App extends Component {
                                       onCloseGraph={this.closeGraph}/>
                     </React.Fragment>
                 )}/>
-                    <Route path="/:museum/artist/:id" exact component={ResourceDetails} />
-                    <Route path="/:museum/:id/artwork" exact component={ResourceDetails} />
-                    <Route path="/:museum/:id" exact component={ResourceDetails} />
+                    <Route path="/museum_data/:museum/artist/:id" exact component={ResourceDetails} />
+                    <Route path="/museum_data/:museum/:id/artwork" exact component={ResourceDetails} />
+                    <Route path="/museum_data/:museum/:id" exact component={ResourceDetails} />
 
             </div>
         </Router>
