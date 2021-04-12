@@ -62,7 +62,7 @@ class ResultTable2 extends React.Component {
                                             }
                                             else
                                             {  if (obj[v].value.includes('http://ct-linkdata.aegean.gr/museum_data')) { //change search element for new mapping dataset
-                                                let id=obj[v].value.split('museum_data/')[1];
+                                                let id='museum_data/'+ obj[v].value.split('museum_data/')[1];
                                                 value = <td key={index+ k} style={{maxWidth: 300, overflow:'hidden'}}><Link to={{
                                                     pathname: '/'+id,
                                                     state: {resourceClicked: obj[v].value,

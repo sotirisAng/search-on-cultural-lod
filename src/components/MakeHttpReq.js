@@ -11,7 +11,7 @@ export function MakeHttpReq(urlEnding,query,accept ) {
         }
     };
     // let url = "http://localhost:3030/tdb2MomaCmoa/"+urlEnding;// || "http://192.168.1.8:3030/tdb2MomaCmoa/"+urlEnding;
-    let url = "http://localhost:3030/museum_data/"+urlEnding;// || "http://192.168.1.8:3030/tdb2MomaCmoa/"+urlEnding;
+    let url = "http://ct-linkdata.aegean.gr/museum_data/"+urlEnding;// || "http://192.168.1.8:3030/tdb2MomaCmoa/"+urlEnding;
    return axios.post(url, query , config )
         .then((res) => {
                 return res;
