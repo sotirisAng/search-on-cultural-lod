@@ -3,8 +3,9 @@ import ResultTable2 from "../ResultTable2";
 import {MakeHttpReq} from "../MakeHttpReq";
 
 export default class ResourceDetailes extends React.Component {
-
-    state = {
+    constructor(props) {
+        super(props);
+    this.state = {
         query: '',
         query_start: 'SELECT distinct * WHERE{ ',
         // query_start: 'SELECT distinct * WHERE{ {',
@@ -18,9 +19,11 @@ export default class ResourceDetailes extends React.Component {
         triples: '',
         rdf_graph_data: '',
         showModal: false,
-        modalTitle: ''
+        modalTitle: '',
+        showGraph: false
     };
 
+    }
 
 
     createSameAsRelation = async (sub, obj) => {
@@ -83,12 +86,12 @@ export default class ResourceDetailes extends React.Component {
             const obj = res.data.results.bindings[0];
             return {
                 uri: sub,
-                type: obj.type.value,
-                title: obj.title.value,
-                date: obj.date.value,
-                creator: obj.creator.value,
-                creatorLabel: obj.creatorLabel.value,
-                creatorAltLabel: obj.creatorAltLabel.value.trim(),
+                type: obj && obj.type.value || '',
+                title: obj && obj.title.value || '',
+                date: obj && obj.date.value.match(/\d{4}/) || '',
+                creator: obj && obj.creator.value || '',
+                creatorLabel: obj && obj.creatorLabel.value || '',
+                creatorAltLabel: obj && obj.creatorAltLabel.value.trim().replace(",","") || '',
             }
         })
     }
@@ -102,18 +105,18 @@ export default class ResourceDetailes extends React.Component {
                           <${sub}> rdf:type ?type ; 
                                    skos:prefLabel ?name;
                                    skos:altLabel ?altName;
-                                   edm:begin ?begin;
-                                   edm:end ?end;
+                           optional { <${sub}> edm:begin ?begin.}
+                           optional { <${sub}> edm:end ?end.}
                         } 
                     `
         return await MakeHttpReq('sparql', q).then((res) => {
-            const obj = res.data.results.bindings[0];
+            const obj = res.data.results.bindings[0] ;
             return {
                 uri: sub,
-                type: obj.type.value,
-                name: obj.name.value,
-                begin: obj.begin.value,
-                end: (obj.end.value === 'Alive' ? "" : obj.end.value),
+                type: obj.type.value ,
+                name: obj.name.value ,
+                begin: obj.begin && obj.begin.value ,
+                end: obj.end && (obj.end.value === 'Alive' ? "" : obj.end.value) ,
                 altName: obj.altName.value.trim()
             }
         })
@@ -137,7 +140,7 @@ export default class ResourceDetailes extends React.Component {
                                 FILTER regex(?begin,"${artist.begin}")       
                             }
                     OPTIONAL {?linkedArtist  dbo:deathDate|edm:end ?end. 
-                               FILTER regex(?begin,"${artist.begin}")  
+                               FILTER regex(?end,"${artist.end}")  
                             }
                     FILTER(?type=edm:Agent || ?type=ore:Proxy)
                     FILTER (?name="${artist.name}"@en || ?name = "${artist.altName}"@en || ?name = "${artist.altName}" || ?name = "${artist.name}")
@@ -160,19 +163,17 @@ export default class ResourceDetailes extends React.Component {
                             ?linkedArtist rdf:type ?type;
                                           rdfs:label ?name.
                             OPTIONAL {  ?linkedArtist dbo:birthDate ?begin.
-                                        BIND (YEAR(?begin) AS ?beginYear)
-                                        FILTER (?beginYear="${artist.begin}"^^xsd:integer)
+                                         FILTER regex(?begin,"${artist.begin}")
                             }
                             OPTIONAL {  ?linkedArtist dbo:deathDate ?end.
-                                        BIND (YEAR(?end) AS ?endYear)
-                                        FILTER (?endYear="${artist.end}"^^xsd:integer)
+                                         FILTER regex(?end,"${artist.end}")
                             }
                             FILTER(?type=(dbo:Agent) || ?type=(dbo:Artist) )
                             FILTER (?name="${artist.name}"@en || ?name = "${artist.altName}"@en || ?name = "${artist.altName}" || ?name = "${artist.name}")
                         } 
                     }`
         return await MakeHttpReq('sparql', q).then((res) => {
-            return res.data.results.bindings
+            return res && res.data.results.bindings
         })
     }
 
@@ -192,7 +193,8 @@ export default class ResourceDetailes extends React.Component {
                         ?linkedArtwork  rdf:type ?type.
                         ?linkedArtwork rdfs:label ?title.
                         ?linkedArtwork dbo:author|dbp:artist  ?creator.
-                        ?creator rdfs:label ?creatorName.
+                        ?creator rdfs:label ?cN.
+                        BIND(REPLACE(?cN, ",", "") AS ?creatorName)
                         OPTIONAL{?linkedArtwork dbp:year ?date.
                             FILTER regex(?date,"${artwork.date}")
                         }
@@ -223,13 +225,14 @@ export default class ResourceDetailes extends React.Component {
                     SERVICE <http://sparql.europeana.eu> {
                         ?linkedArtwork  rdf:type ?type.
                         ?linkedArtwork dc:title ?title.
-                        ?linkedArtwork dc:creator ?creator.
+                        ?linkedArtwork dc:creator|dc:creator/skos:prefLabel ?c.
+                        BIND(REPLACE(?c, ",", "") AS ?creator)
                         OPTIONAL{?linkedArtwork dc:date ?date.
                             FILTER regex(?date,"${artwork.date}")
                         }
                         OPTIONAL{?linkedArtwork dct:medium ?medium.}
-                        FILTER (?type = edm:ProvidedCHO || ?type = edm:Proxy)
-                        FILTER (?title = "${artwork.title}" || ?title = "${artwork.title}"@en)
+                        FILTER (?type = edm:ProvidedCHO || ?type = ore:Proxy || ?type = edm:Proxy)
+                        FILTER ((?title = "${artwork.title}" )|| (?title = "${artwork.title}"@en) || (?title = "${artwork.title}"@en-us))
                         FILTER (?creator="${artwork.creatorLabel}"@en || ?creator = "${artwork.creatorAltLabel}"@en || ?creator = "${artwork.creatorLabel}" || ?creator = "${artwork.creatorAltLabel}")
                     }
                 }`
@@ -245,13 +248,15 @@ export default class ResourceDetailes extends React.Component {
     }
 
     compareFederatedArtistResults = (artist, results) => {
-        results.map((federatedArtist) => {
-            let begin = federatedArtist.begin && federatedArtist.begin.value
-            let end = federatedArtist.end && federatedArtist.end.value
-            if (begin !== undefined || end !== undefined) {
-                this.createSameAsRelation(artist.uri, federatedArtist.linkedArtist.value)
-            }
-        })
+        if (results ){
+            results.map((federatedArtist) => {
+                let begin = federatedArtist.begin && federatedArtist.begin.value
+                let end = federatedArtist.end && federatedArtist.end.value
+                if (begin !== undefined || end !== undefined) {
+                    this.createSameAsRelation(artist.uri, federatedArtist.linkedArtist.value)
+                }
+            })
+        }
     }
 
     componentDidMount() {
@@ -327,7 +332,7 @@ export default class ResourceDetailes extends React.Component {
     };
 
     showTurtle = () => {
-        const theLink = 'http://ct-linkdata.aegean.gr/museum_data' + this.props.match.url;
+        const theLink = 'http://ct-linkdata.aegean.gr' + this.props.match.url;
         const query = 'query= describe <' + theLink + '>';
         MakeHttpReq('sparql', query, 'application/rdf+xml').then((res) => {
                 this.setState({
@@ -340,8 +345,8 @@ export default class ResourceDetailes extends React.Component {
     };
 
     showJson = () => {
-        const theLink = 'http://ct-linkdata.aegean.gr/museum_data' + this.props.match.url;
-        const query = 'query= describe <' + theLink + '>';
+        const theLink = 'http://ct-linkdata.aegean.gr' + this.props.match.url;
+        const query = 'query=describe <' + theLink + '>';
         MakeHttpReq('sparql', query, 'application/ld+json').then((res) => {
                 this.setState({
                     rdf_graph_data: JSON.stringify(res.data, null, 2),
@@ -382,16 +387,30 @@ export default class ResourceDetailes extends React.Component {
         )
     };
 
+    showGraph = () => {
+        this.setState({
+            showGraph: true
+        })
+    };
+
+    closeGraph = () => {
+        this.setState({
+            showGraph: false
+        })
+    };
+
 
     render() {
         return (
             <div>
                 <div>
-                    <ResultTable2 http_result={this.state.http_result} triples={this.state.triples}/>
+                    <ResultTable2 http_result={this.state.http_result} triples={this.state.triples} showGraph={this.state.showGraph}
+                                  onCloseGraph={this.closeGraph} detailed_resource={'http://ct-linkdata.aegean.gr' + this.props.match.url}/>
                 </div>
                 <button className={"btn btn-info"} onClick={this.showTurtle}>RDF-XML</button>
                 {this.theModal()}
                 <button className={"btn btn-info"} onClick={this.showJson}>JSON-LD</button>
+                <button className={"btn btn-info"} onClick={this.showGraph}>Graph</button>
             </div>
         )
     }
