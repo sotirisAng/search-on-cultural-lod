@@ -26,12 +26,22 @@ class ResultTable2 extends React.Component {
             return <h3>No results</h3>;
         else {
             let results_to_show = this.props.http_result < PAGE_SIZE ? this.props.http_result : this.props.http_result.slice(this.state.offset, this.state.offset + PAGE_SIZE)
-                return(
+            return(
                     results_to_show.map((obj, index) =>{
                         const objkeys = Object.keys(obj);
-                        if(this.props.triples.length > 0 ) {
+                        if (this.props.detailed_resource !== undefined) {
+                                triples.push(
+                                    {
+                                        subject: this.props.detailed_resource,
+                                        predicate: this.showPrefix(obj.property.value),
+                                        object: this.showPrefix(obj.object.value)
+                                    }
+                                )
+                             this.state.triples = triples;
+                        }
+                       else if(this.props.triples.length > 0 ) {
                             this.props.triples.map(triple => {
-                                if(obj[triple[0]] !== undefined && obj[triple[2]] !== undefined)
+                                if(obj[triple[0]] !== undefined && obj[triple[2]] !== undefined) {
                                     triples.push(
                                         {
                                             subject: obj[triple[0]].value,
@@ -39,6 +49,8 @@ class ResultTable2 extends React.Component {
                                             object: obj[triple[2]].value
                                         }
                                     )
+                                }
+
                                 return triples
                             });
                             // this.setState({
@@ -54,7 +66,6 @@ class ResultTable2 extends React.Component {
                                         {
                                             if(k===0 && obj[v].value === 'http://www.europeana.eu/schemas/edm/hasView') {
                                                 setImg = true;
-
                                             }
                                             let value;
                                             if (obj[v].type !== 'uri')  {
@@ -70,7 +81,7 @@ class ResultTable2 extends React.Component {
                                                 }} > {obj[v].value} </Link></td>
                                             }
                                             else if(k===1 && setImg){
-                                                value = <td key={index+ k}><img alt={obj[v].value} src={obj[v].value}/></td>
+                                                value = <td key={index+ k}><img src={obj[v].value}/></td>
                                             }
                                             else {
                                                 value = <td key={index+ k}><a href={obj[v].value}> {this.showPrefix(obj[v].value)} </a></td>

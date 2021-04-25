@@ -11,7 +11,7 @@ export class Curve2 extends React.Component{
 
         // const force = d3.layout.force().size([800, 600]);
         const simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function (d) {return 100;}))
             .force('charge', d3.forceManyBody().strength(-40))
             .force('center', d3.forceCenter(1000 / 2, 600 / 2));
 
