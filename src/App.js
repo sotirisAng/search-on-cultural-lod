@@ -4,6 +4,7 @@ import Inputs from './components/Inputs';
 import ResultTable2 from './components/ResultTable2';
 import {BrowserRouter as Router, Link, Route} from 'react-router-dom'
 import ResourceDetails from "./components/pages/ResourceDetails";
+import Demo from "./components/Demo";
 
 
 import './App.css';
@@ -116,16 +117,16 @@ class App extends Component {
 
     clearQuery = () => {
         // if (confirm("Are you sure you want to clear the all inputs?")) {
-            this.setState({
-                query: '',
-                subjects: [],
-                filters: [],
-                external_services: [],
-                triples: '',
-                btn: false,
-                input_value: '',
-                clear_inputs: true
-            });
+        this.setState({
+            query: '',
+            subjects: [],
+            filters: [],
+            external_services: [],
+            triples: '',
+            btn: false,
+            input_value: '',
+            clear_inputs: true
+        });
         // }
     };
 
@@ -171,12 +172,13 @@ class App extends Component {
             <Router>
                 <div className="App">
                     <div className="App-header">
-                        <Link to={{pathname: '/museum_data'}}>
+                        <Link to={{pathname: '/museum_data/'}}>
                             <img src={logo} className="App-logo" alt="logo"/>
                         </Link>
                         <h2>Search of Semantically Integrated Museum Data </h2>
                     </div>
                     <div className="container-fluid">
+                        <Demo/>
                         <div className="row">
                             <div className={'card col-md-6'}>
                                 <h2>Artist</h2>
@@ -191,7 +193,7 @@ class App extends Component {
                                 />
                                 {/*<h3>Lived Between (Years)</h3>*/}
                                 <Inputs key={"begin"}
-                                    passValue={this.passValue}
+                                        passValue={this.passValue}
                                         custom_filter={{
                                             start: ' FILTER(',
                                             subject: '',
@@ -206,8 +208,8 @@ class App extends Component {
                                         placeholder={'Born after year'}
                                         clear={this.state.clear_inputs}
                                 />
-                                <Inputs  key={"end"}
-                                    passValue={this.passValue}
+                                <Inputs key={"end"}
+                                        passValue={this.passValue}
                                         custom_filter={{
                                             start: ' FILTER(',
                                             subject: '',
@@ -309,8 +311,8 @@ class App extends Component {
                                           onCloseGraph={this.closeGraph}/>
                         </React.Fragment>
                     )}/>
-                    <Route path="/museum_data/:museum/artist/:id" exact component={ResourceDetails}/>
-                    <Route path="/museum_data/:museum/:id/artwork" exact component={ResourceDetails}/>
+                    <Route path="/museum_data/:museum/artist/:id" component={ResourceDetails}/>
+                    <Route path="/museum_data/:museum/:id/artwork" component={ResourceDetails}/>
                     <Route path="/museum_data/:museum/:id" exact component={ResourceDetails}/>
 
                 </div>
